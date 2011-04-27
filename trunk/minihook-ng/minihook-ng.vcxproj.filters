@@ -1,0 +1,580 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Engine Calls">
+      <UniqueIdentifier>{c7f03253-64c5-4545-8151-1c51805a4952}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Engine Calls\StudioModelRenderer">
+      <UniqueIdentifier>{6dbbcee7-e69c-444a-a9ec-04b770f00068}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Engine Calls\ClientDll">
+      <UniqueIdentifier>{c2e7c536-8889-4ae4-92ff-b2dfb067814f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Engine Calls\PreS_DynamicSound">
+      <UniqueIdentifier>{62f7434c-1839-4353-b7d1-912edb0872b2}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Engine Calls\UserMsgs">
+      <UniqueIdentifier>{81e69af2-2a97-4f01-a663-7b383fea3632}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Engine Calls\Events">
+      <UniqueIdentifier>{2e6890c3-d5f4-4514-a87f-c92acb5eb9d2}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="HLSDK Headers">
+      <UniqueIdentifier>{e770f024-ffa8-40dd-bd75-39278732acd7}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="HLSDK Headers\Include">
+      <UniqueIdentifier>{e48c6ab4-10c8-4721-b0c0-66971c320b0f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Basic Utilities">
+      <UniqueIdentifier>{302abe1f-fd46-4c4e-a893-dad9991c89df}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Basic Utilities\Memory Scan">
+      <UniqueIdentifier>{940b57f1-8321-4fb6-ad05-19050cbaebf0}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Basic Utilities\Offset Scan">
+      <UniqueIdentifier>{23b5d42d-d88f-41a9-8f4e-e5c99c33a953}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Basic Utilities\Module Security">
+      <UniqueIdentifier>{b0b782e2-8744-4203-a7ad-551b3492b516}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Basic Utilities\Drawing">
+      <UniqueIdentifier>{48397510-c7c7-4dcf-a85a-ea2755a87ede}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Basic Utilities\Calculations">
+      <UniqueIdentifier>{c904fa1c-3c2d-472f-9d5f-69be7efc444c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Basic Utilities\Detours">
+      <UniqueIdentifier>{8d8f050e-c925-46de-ab18-1f7a2df4e77a}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="TransInclude.h">
+      <Filter>Engine Calls</Filter>
+    </ClInclude>
+    <ClInclude Include="StudioModelRenderer.h">
+      <Filter>Engine Calls\StudioModelRenderer</Filter>
+    </ClInclude>
+    <ClInclude Include="ClientDll.h">
+      <Filter>Engine Calls\ClientDll</Filter>
+    </ClInclude>
+    <ClInclude Include="PreS_DynamicSound.h">
+      <Filter>Engine Calls\PreS_DynamicSound</Filter>
+    </ClInclude>
+    <ClInclude Include="UserMsgs.h">
+      <Filter>Engine Calls\UserMsgs</Filter>
+    </ClInclude>
+    <ClInclude Include="Events.h">
+      <Filter>Engine Calls\Events</Filter>
+    </ClInclude>
+    <ClInclude Include="hlsdk_headers\activity.h">
+      <Filter>HLSDK Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="hlsdk_headers\activitymap.h">
+      <Filter>HLSDK Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="hlsdk_headers\ammo.h">
+      <Filter>HLSDK Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="hlsdk_headers\ammohistory.h">
+      <Filter>HLSDK Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="hlsdk_headers\animation.h">
+      <Filter>HLSDK Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="hlsdk_headers\anorms.h">
+      <Filter>HLSDK Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="hlsdk_headers\basemonster.h">
+      <Filter>HLSDK Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="hlsdk_headers\beamdef.h">
+      <Filter>HLSDK Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="hlsdk_headers\bitvec.h">
+      <Filter>HLSDK Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="hlsdk_headers\camera.h">
+      <Filter>HLSDK Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="hlsdk_headers\cbase.h">
+      <Filter>HLSDK Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="hlsdk_headers\cdll_dll.h">
+      <Filter>HLSDK Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="hlsdk_headers\cdll_int.h">
+      <Filter>HLSDK Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="hlsdk_headers\cl_dll.h">
+      <Filter>HLSDK Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="hlsdk_headers\cl_entity.h">
+      <Filter>HLSDK Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="hlsdk_headers\cl_util.h">
+      <Filter>HLSDK Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="hlsdk_headers\client.h">
+      <Filter>HLSDK Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="hlsdk_headers\com_model.h">
+      <Filter>HLSDK Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="hlsdk_headers\com_weapons.h">
+      <Filter>HLSDK Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="hlsdk_headers\con_nprint.h">
+      <Filter>HLSDK Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="hlsdk_headers\const.h">
+      <Filter>HLSDK Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="hlsdk_headers\crc.h">
+      <Filter>HLSDK Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="hlsdk_headers\custom.h">
+      <Filter>HLSDK Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="hlsdk_headers\customentity.h">
+      <Filter>HLSDK Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="hlsdk_headers\cvardef.h">
+      <Filter>HLSDK Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="hlsdk_headers\decals.h">
+      <Filter>HLSDK Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="hlsdk_headers\defaultai.h">
+      <Filter>HLSDK Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="hlsdk_headers\demo.h">
+      <Filter>HLSDK Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="hlsdk_headers\demo_api.h">
+      <Filter>HLSDK Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="hlsdk_headers\director_cmds.h">
+      <Filter>HLSDK Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="hlsdk_headers\dlight.h">
+      <Filter>HLSDK Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="hlsdk_headers\dll_state.h">
+      <Filter>HLSDK Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="hlsdk_headers\doors.h">
+      <Filter>HLSDK Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="hlsdk_headers\edict.h">
+      <Filter>HLSDK Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="hlsdk_headers\effects.h">
+      <Filter>HLSDK Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="hlsdk_headers\eiface.h">
+      <Filter>HLSDK Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="hlsdk_headers\engine_launcher_api.h">
+      <Filter>HLSDK Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="hlsdk_headers\enginecallback.h">
+      <Filter>HLSDK Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="hlsdk_headers\entity_state.h">
+      <Filter>HLSDK Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="hlsdk_headers\entity_types.h">
+      <Filter>HLSDK Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="hlsdk_headers\ev_hldm.h">
+      <Filter>HLSDK Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="hlsdk_headers\event_api.h">
+      <Filter>HLSDK Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="hlsdk_headers\event_args.h">
+      <Filter>HLSDK Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="hlsdk_headers\event_flags.h">
+      <Filter>HLSDK Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="hlsdk_headers\eventscripts.h">
+      <Filter>HLSDK Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="hlsdk_headers\exefuncs.h">
+      <Filter>HLSDK Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="hlsdk_headers\explode.h">
+      <Filter>HLSDK Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="hlsdk_headers\extdll.h">
+      <Filter>HLSDK Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="hlsdk_headers\flyingmonster.h">
+      <Filter>HLSDK Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="hlsdk_headers\func_break.h">
+      <Filter>HLSDK Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="hlsdk_headers\game.h">
+      <Filter>HLSDK Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="hlsdk_headers\gamerules.h">
+      <Filter>HLSDK Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="hlsdk_headers\GameStudioModelRenderer.h">
+      <Filter>HLSDK Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="hlsdk_headers\GameStudioModelRenderer_Sample.h">
+      <Filter>HLSDK Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="hlsdk_headers\health.h">
+      <Filter>HLSDK Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="hlsdk_headers\hltv.h">
+      <Filter>HLSDK Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="hlsdk_headers\hornet.h">
+      <Filter>HLSDK Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="hlsdk_headers\hud.h">
+      <Filter>HLSDK Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="hlsdk_headers\hud_iface.h">
+      <Filter>HLSDK Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="hlsdk_headers\hud_servers.h">
+      <Filter>HLSDK Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="hlsdk_headers\hud_servers_priv.h">
+      <Filter>HLSDK Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="hlsdk_headers\hud_spectator.h">
+      <Filter>HLSDK Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="hlsdk_headers\in_buttons.h">
+      <Filter>HLSDK Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="hlsdk_headers\in_defs.h">
+      <Filter>HLSDK Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="hlsdk_headers\interface.h">
+      <Filter>HLSDK Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="hlsdk_headers\items.h">
+      <Filter>HLSDK Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="hlsdk_headers\ivoicetweak.h">
+      <Filter>HLSDK Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="hlsdk_headers\kbutton.h">
+      <Filter>HLSDK Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="hlsdk_headers\keydefs.h">
+      <Filter>HLSDK Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="hlsdk_headers\maprules.h">
+      <Filter>HLSDK Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="hlsdk_headers\mathlib.h">
+      <Filter>HLSDK Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="hlsdk_headers\monsterevent.h">
+      <Filter>HLSDK Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="hlsdk_headers\monsters.h">
+      <Filter>HLSDK Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="multimod.h">
+      <Filter>HLSDK Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="hlsdk_headers\net_api.h">
+      <Filter>HLSDK Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="hlsdk_headers\netadr.h">
+      <Filter>HLSDK Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="hlsdk_headers\nodes.h">
+      <Filter>HLSDK Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="hlsdk_headers\nowin.h">
+      <Filter>HLSDK Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="hlsdk_headers\overview.h">
+      <Filter>HLSDK Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="hlsdk_headers\parsemsg.h">
+      <Filter>HLSDK Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="hlsdk_headers\particledef.h">
+      <Filter>HLSDK Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="hlsdk_headers\plane.h">
+      <Filter>HLSDK Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="hlsdk_headers\player.h">
+      <Filter>HLSDK Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="hlsdk_headers\pm_debug.h">
+      <Filter>HLSDK Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="hlsdk_headers\pm_defs.h">
+      <Filter>HLSDK Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="hlsdk_headers\pm_info.h">
+      <Filter>HLSDK Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="hlsdk_headers\pm_materials.h">
+      <Filter>HLSDK Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="hlsdk_headers\pm_movevars.h">
+      <Filter>HLSDK Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="hlsdk_headers\pm_shared.h">
+      <Filter>HLSDK Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="hlsdk_headers\pmtrace.h">
+      <Filter>HLSDK Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="hlsdk_headers\progdefs.h">
+      <Filter>HLSDK Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="hlsdk_headers\progs.h">
+      <Filter>HLSDK Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="hlsdk_headers\qfont.h">
+      <Filter>HLSDK Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="hlsdk_headers\r_efx.h">
+      <Filter>HLSDK Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="hlsdk_headers\r_studioint.h">
+      <Filter>HLSDK Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="hlsdk_headers\ref_params.h">
+      <Filter>HLSDK Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="hlsdk_headers\saverestore.h">
+      <Filter>HLSDK Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="hlsdk_headers\schedule.h">
+      <Filter>HLSDK Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="hlsdk_headers\screenfade.h">
+      <Filter>HLSDK Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="hlsdk_headers\scripted.h">
+      <Filter>HLSDK Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="hlsdk_headers\scriptevent.h">
+      <Filter>HLSDK Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="hlsdk_headers\shake.h">
+      <Filter>HLSDK Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="hlsdk_headers\skill.h">
+      <Filter>HLSDK Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="hlsdk_headers\soundent.h">
+      <Filter>HLSDK Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="hlsdk_headers\spectator.h">
+      <Filter>HLSDK Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="hlsdk_headers\squad.h">
+      <Filter>HLSDK Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="hlsdk_headers\squadmonster.h">
+      <Filter>HLSDK Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="hlsdk_headers\studio.h">
+      <Filter>HLSDK Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="hlsdk_headers\studio_event.h">
+      <Filter>HLSDK Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="hlsdk_headers\studio_util.h">
+      <Filter>HLSDK Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="hlsdk_headers\StudioModelRenderer.h">
+      <Filter>HLSDK Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="hlsdk_headers\talkmonster.h">
+      <Filter>HLSDK Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="hlsdk_headers\teamplay_gamerules.h">
+      <Filter>HLSDK Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="hlsdk_headers\tf_defs.h">
+      <Filter>HLSDK Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="hlsdk_headers\trains.h">
+      <Filter>HLSDK Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="hlsdk_headers\triangleapi.h">
+      <Filter>HLSDK Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="hlsdk_headers\usercmd.h">
+      <Filter>HLSDK Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="hlsdk_headers\util.h">
+      <Filter>HLSDK Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="hlsdk_headers\util_vector.h">
+      <Filter>HLSDK Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="hlsdk_headers\vector.h">
+      <Filter>HLSDK Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="hlsdk_headers\vgui_checkbutton2.h">
+      <Filter>HLSDK Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="hlsdk_headers\vgui_ConsolePanel.h">
+      <Filter>HLSDK Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="hlsdk_headers\vgui_ControlConfigPanel.h">
+      <Filter>HLSDK Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="hlsdk_headers\vgui_defaultinputsignal.h">
+      <Filter>HLSDK Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="hlsdk_headers\vgui_grid.h">
+      <Filter>HLSDK Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="hlsdk_headers\vgui_helpers.h">
+      <Filter>HLSDK Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="hlsdk_headers\vgui_int.h">
+      <Filter>HLSDK Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="hlsdk_headers\vgui_listbox.h">
+      <Filter>HLSDK Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="hlsdk_headers\vgui_loadtga.h">
+      <Filter>HLSDK Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="hlsdk_headers\vgui_SchemeManager.h">
+      <Filter>HLSDK Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="hlsdk_headers\vgui_ScorePanel.h">
+      <Filter>HLSDK Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="hlsdk_headers\vgui_scrollbar2.h">
+      <Filter>HLSDK Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="hlsdk_headers\vgui_ServerBrowser.h">
+      <Filter>HLSDK Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="hlsdk_headers\vgui_slider2.h">
+      <Filter>HLSDK Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="hlsdk_headers\vgui_SpectatorPanel.h">
+      <Filter>HLSDK Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="hlsdk_headers\vgui_TeamFortressViewport.h">
+      <Filter>HLSDK Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="hlsdk_headers\view.h">
+      <Filter>HLSDK Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="hlsdk_headers\voice_banmgr.h">
+      <Filter>HLSDK Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="hlsdk_headers\voice_common.h">
+      <Filter>HLSDK Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="hlsdk_headers\voice_gamemgr.h">
+      <Filter>HLSDK Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="hlsdk_headers\voice_status.h">
+      <Filter>HLSDK Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="hlsdk_headers\voice_vgui_tweakdlg.h">
+      <Filter>HLSDK Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="hlsdk_headers\weaponinfo.h">
+      <Filter>HLSDK Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="hlsdk_headers\weapons.h">
+      <Filter>HLSDK Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="hlsdk_headers\wrect.h">
+      <Filter>HLSDK Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="hlsdk_headers\wxdebug.h">
+      <Filter>HLSDK Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="SDKInclude.h">
+      <Filter>HLSDK Headers\Include</Filter>
+    </ClInclude>
+    <ClInclude Include="MemoryScan.h">
+      <Filter>Basic Utilities\Memory Scan</Filter>
+    </ClInclude>
+    <ClInclude Include="OffsetScan.h">
+      <Filter>Basic Utilities\Offset Scan</Filter>
+    </ClInclude>
+    <ClInclude Include="ModuleSecurity.h">
+      <Filter>Basic Utilities\Module Security</Filter>
+    </ClInclude>
+    <ClInclude Include="Drawing.h">
+      <Filter>Basic Utilities\Drawing</Filter>
+    </ClInclude>
+    <ClInclude Include="Calculations.h">
+      <Filter>Basic Utilities\Calculations</Filter>
+    </ClInclude>
+    <ClInclude Include="ADE32.h">
+      <Filter>Basic Utilities\Detours</Filter>
+    </ClInclude>
+    <ClInclude Include="Detour.h">
+      <Filter>Basic Utilities\Detours</Filter>
+    </ClInclude>
+    <ClInclude Include="util.h">
+      <Filter>Basic Utilities</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="StudioModelRenderer.cpp">
+      <Filter>Engine Calls\StudioModelRenderer</Filter>
+    </ClCompile>
+    <ClCompile Include="ClientDll.cpp">
+      <Filter>Engine Calls\ClientDll</Filter>
+    </ClCompile>
+    <ClCompile Include="PreS_DynamicSound.cpp">
+      <Filter>Engine Calls\PreS_DynamicSound</Filter>
+    </ClCompile>
+    <ClCompile Include="UserMsgs.cpp">
+      <Filter>Engine Calls\UserMsgs</Filter>
+    </ClCompile>
+    <ClCompile Include="Events.cpp">
+      <Filter>Engine Calls\Events</Filter>
+    </ClCompile>
+    <ClCompile Include="hlsdk_headers\parsemsg.cpp">
+      <Filter>HLSDK Headers</Filter>
+    </ClCompile>
+    <ClCompile Include="MemoryScan.cpp">
+      <Filter>Basic Utilities\Memory Scan</Filter>
+    </ClCompile>
+    <ClCompile Include="OffsetScan.cpp">
+      <Filter>Basic Utilities\Offset Scan</Filter>
+    </ClCompile>
+    <ClCompile Include="ModuleSecurity.cpp">
+      <Filter>Basic Utilities\Module Security</Filter>
+    </ClCompile>
+    <ClCompile Include="Drawing.cpp">
+      <Filter>Basic Utilities\Drawing</Filter>
+    </ClCompile>
+    <ClCompile Include="Calculations.cpp">
+      <Filter>Basic Utilities\Calculations</Filter>
+    </ClCompile>
+    <ClCompile Include="ADE32.cpp">
+      <Filter>Basic Utilities\Detours</Filter>
+    </ClCompile>
+    <ClCompile Include="Detour.cpp">
+      <Filter>Basic Utilities\Detours</Filter>
+    </ClCompile>
+    <ClCompile Include="DllMain.cpp" />
+    <ClCompile Include="util.cpp">
+      <Filter>Basic Utilities</Filter>
+    </ClCompile>
+  </ItemGroup>
+</Project>
