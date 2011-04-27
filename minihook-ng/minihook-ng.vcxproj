@@ -1,0 +1,243 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Debug|Win32">
+      <Configuration>Debug</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|Win32">
+      <Configuration>Release</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <ProjectGuid>{8985C9A0-101B-469B-897A-C6C09C904FB2}</ProjectGuid>
+    <ProjectName>minihook-ng</ProjectName>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
+    <ConfigurationType>DynamicLibrary</ConfigurationType>
+    <CharacterSet>MultiByte</CharacterSet>
+    <WholeProgramOptimization>false</WholeProgramOptimization>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Label="ExtensionSettings">
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <PropertyGroup>
+    <_ProjectFileVersion>10.0.30319.1</_ProjectFileVersion>
+    <OutDir Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(SolutionDir)$(Configuration)\</OutDir>
+    <IntDir Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(Configuration)\</IntDir>
+    <OutDir Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(SolutionDir)$(Configuration)\</OutDir>
+    <IntDir Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(Configuration)\</IntDir>
+  </PropertyGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <ClCompile>
+      <BufferSecurityCheck>false</BufferSecurityCheck>
+      <RuntimeTypeInfo>false</RuntimeTypeInfo>
+      <WarningLevel>Level1</WarningLevel>
+      <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
+    </ClCompile>
+    <Link>
+      <EntryPointSymbol>
+      </EntryPointSymbol>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <ClCompile>
+      <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
+    </ClCompile>
+  </ItemDefinitionGroup>
+  <ItemGroup>
+    <ClInclude Include="TransInclude.h" />
+    <ClInclude Include="StudioModelRenderer.h" />
+    <ClInclude Include="ClientDll.h" />
+    <ClInclude Include="PreS_DynamicSound.h" />
+    <ClInclude Include="UserMsgs.h" />
+    <ClInclude Include="Events.h" />
+    <ClInclude Include="hlsdk_headers\activity.h" />
+    <ClInclude Include="hlsdk_headers\activitymap.h" />
+    <ClInclude Include="hlsdk_headers\ammo.h" />
+    <ClInclude Include="hlsdk_headers\ammohistory.h" />
+    <ClInclude Include="hlsdk_headers\animation.h" />
+    <ClInclude Include="hlsdk_headers\anorms.h" />
+    <ClInclude Include="hlsdk_headers\basemonster.h" />
+    <ClInclude Include="hlsdk_headers\beamdef.h" />
+    <ClInclude Include="hlsdk_headers\bitvec.h" />
+    <ClInclude Include="hlsdk_headers\camera.h" />
+    <ClInclude Include="hlsdk_headers\cbase.h" />
+    <ClInclude Include="hlsdk_headers\cdll_dll.h" />
+    <ClInclude Include="hlsdk_headers\cdll_int.h" />
+    <ClInclude Include="hlsdk_headers\cl_dll.h" />
+    <ClInclude Include="hlsdk_headers\cl_entity.h" />
+    <ClInclude Include="hlsdk_headers\cl_util.h" />
+    <ClInclude Include="hlsdk_headers\client.h" />
+    <ClInclude Include="hlsdk_headers\com_model.h" />
+    <ClInclude Include="hlsdk_headers\com_weapons.h" />
+    <ClInclude Include="hlsdk_headers\con_nprint.h" />
+    <ClInclude Include="hlsdk_headers\const.h" />
+    <ClInclude Include="hlsdk_headers\crc.h" />
+    <ClInclude Include="hlsdk_headers\custom.h" />
+    <ClInclude Include="hlsdk_headers\customentity.h" />
+    <ClInclude Include="hlsdk_headers\cvardef.h" />
+    <ClInclude Include="hlsdk_headers\decals.h" />
+    <ClInclude Include="hlsdk_headers\defaultai.h" />
+    <ClInclude Include="hlsdk_headers\demo.h" />
+    <ClInclude Include="hlsdk_headers\demo_api.h" />
+    <ClInclude Include="hlsdk_headers\director_cmds.h" />
+    <ClInclude Include="hlsdk_headers\dlight.h" />
+    <ClInclude Include="hlsdk_headers\dll_state.h" />
+    <ClInclude Include="hlsdk_headers\doors.h" />
+    <ClInclude Include="hlsdk_headers\edict.h" />
+    <ClInclude Include="hlsdk_headers\effects.h" />
+    <ClInclude Include="hlsdk_headers\eiface.h" />
+    <ClInclude Include="hlsdk_headers\engine_launcher_api.h" />
+    <ClInclude Include="hlsdk_headers\enginecallback.h" />
+    <ClInclude Include="hlsdk_headers\entity_state.h" />
+    <ClInclude Include="hlsdk_headers\entity_types.h" />
+    <ClInclude Include="hlsdk_headers\ev_hldm.h" />
+    <ClInclude Include="hlsdk_headers\event_api.h" />
+    <ClInclude Include="hlsdk_headers\event_args.h" />
+    <ClInclude Include="hlsdk_headers\event_flags.h" />
+    <ClInclude Include="hlsdk_headers\eventscripts.h" />
+    <ClInclude Include="hlsdk_headers\exefuncs.h" />
+    <ClInclude Include="hlsdk_headers\explode.h" />
+    <ClInclude Include="hlsdk_headers\extdll.h" />
+    <ClInclude Include="hlsdk_headers\flyingmonster.h" />
+    <ClInclude Include="hlsdk_headers\func_break.h" />
+    <ClInclude Include="hlsdk_headers\game.h" />
+    <ClInclude Include="hlsdk_headers\gamerules.h" />
+    <ClInclude Include="hlsdk_headers\GameStudioModelRenderer.h" />
+    <ClInclude Include="hlsdk_headers\GameStudioModelRenderer_Sample.h" />
+    <ClInclude Include="hlsdk_headers\health.h" />
+    <ClInclude Include="hlsdk_headers\hltv.h" />
+    <ClInclude Include="hlsdk_headers\hornet.h" />
+    <ClInclude Include="hlsdk_headers\hud.h" />
+    <ClInclude Include="hlsdk_headers\hud_iface.h" />
+    <ClInclude Include="hlsdk_headers\hud_servers.h" />
+    <ClInclude Include="hlsdk_headers\hud_servers_priv.h" />
+    <ClInclude Include="hlsdk_headers\hud_spectator.h" />
+    <ClInclude Include="hlsdk_headers\in_buttons.h" />
+    <ClInclude Include="hlsdk_headers\in_defs.h" />
+    <ClInclude Include="hlsdk_headers\interface.h" />
+    <ClInclude Include="hlsdk_headers\items.h" />
+    <ClInclude Include="hlsdk_headers\ivoicetweak.h" />
+    <ClInclude Include="hlsdk_headers\kbutton.h" />
+    <ClInclude Include="hlsdk_headers\keydefs.h" />
+    <ClInclude Include="hlsdk_headers\maprules.h" />
+    <ClInclude Include="hlsdk_headers\mathlib.h" />
+    <ClInclude Include="hlsdk_headers\monsterevent.h" />
+    <ClInclude Include="hlsdk_headers\monsters.h" />
+    <ClInclude Include="multimod.h" />
+    <ClInclude Include="hlsdk_headers\net_api.h" />
+    <ClInclude Include="hlsdk_headers\netadr.h" />
+    <ClInclude Include="hlsdk_headers\nodes.h" />
+    <ClInclude Include="hlsdk_headers\nowin.h" />
+    <ClInclude Include="hlsdk_headers\overview.h" />
+    <ClInclude Include="hlsdk_headers\parsemsg.h" />
+    <ClInclude Include="hlsdk_headers\particledef.h" />
+    <ClInclude Include="hlsdk_headers\plane.h" />
+    <ClInclude Include="hlsdk_headers\player.h" />
+    <ClInclude Include="hlsdk_headers\pm_debug.h" />
+    <ClInclude Include="hlsdk_headers\pm_defs.h" />
+    <ClInclude Include="hlsdk_headers\pm_info.h" />
+    <ClInclude Include="hlsdk_headers\pm_materials.h" />
+    <ClInclude Include="hlsdk_headers\pm_movevars.h" />
+    <ClInclude Include="hlsdk_headers\pm_shared.h" />
+    <ClInclude Include="hlsdk_headers\pmtrace.h" />
+    <ClInclude Include="hlsdk_headers\progdefs.h" />
+    <ClInclude Include="hlsdk_headers\progs.h" />
+    <ClInclude Include="hlsdk_headers\qfont.h" />
+    <ClInclude Include="hlsdk_headers\r_efx.h" />
+    <ClInclude Include="hlsdk_headers\r_studioint.h" />
+    <ClInclude Include="hlsdk_headers\ref_params.h" />
+    <ClInclude Include="hlsdk_headers\saverestore.h" />
+    <ClInclude Include="hlsdk_headers\schedule.h" />
+    <ClInclude Include="hlsdk_headers\screenfade.h" />
+    <ClInclude Include="hlsdk_headers\scripted.h" />
+    <ClInclude Include="hlsdk_headers\scriptevent.h" />
+    <ClInclude Include="hlsdk_headers\shake.h" />
+    <ClInclude Include="hlsdk_headers\skill.h" />
+    <ClInclude Include="hlsdk_headers\soundent.h" />
+    <ClInclude Include="hlsdk_headers\spectator.h" />
+    <ClInclude Include="hlsdk_headers\squad.h" />
+    <ClInclude Include="hlsdk_headers\squadmonster.h" />
+    <ClInclude Include="hlsdk_headers\studio.h" />
+    <ClInclude Include="hlsdk_headers\studio_event.h" />
+    <ClInclude Include="hlsdk_headers\studio_util.h" />
+    <ClInclude Include="hlsdk_headers\StudioModelRenderer.h" />
+    <ClInclude Include="hlsdk_headers\talkmonster.h" />
+    <ClInclude Include="hlsdk_headers\teamplay_gamerules.h" />
+    <ClInclude Include="hlsdk_headers\tf_defs.h" />
+    <ClInclude Include="hlsdk_headers\trains.h" />
+    <ClInclude Include="hlsdk_headers\triangleapi.h" />
+    <ClInclude Include="hlsdk_headers\usercmd.h" />
+    <ClInclude Include="hlsdk_headers\util.h" />
+    <ClInclude Include="hlsdk_headers\util_vector.h" />
+    <ClInclude Include="hlsdk_headers\vector.h" />
+    <ClInclude Include="hlsdk_headers\vgui_checkbutton2.h" />
+    <ClInclude Include="hlsdk_headers\vgui_ConsolePanel.h" />
+    <ClInclude Include="hlsdk_headers\vgui_ControlConfigPanel.h" />
+    <ClInclude Include="hlsdk_headers\vgui_defaultinputsignal.h" />
+    <ClInclude Include="hlsdk_headers\vgui_grid.h" />
+    <ClInclude Include="hlsdk_headers\vgui_helpers.h" />
+    <ClInclude Include="hlsdk_headers\vgui_int.h" />
+    <ClInclude Include="hlsdk_headers\vgui_listbox.h" />
+    <ClInclude Include="hlsdk_headers\vgui_loadtga.h" />
+    <ClInclude Include="hlsdk_headers\vgui_SchemeManager.h" />
+    <ClInclude Include="hlsdk_headers\vgui_ScorePanel.h" />
+    <ClInclude Include="hlsdk_headers\vgui_scrollbar2.h" />
+    <ClInclude Include="hlsdk_headers\vgui_ServerBrowser.h" />
+    <ClInclude Include="hlsdk_headers\vgui_slider2.h" />
+    <ClInclude Include="hlsdk_headers\vgui_SpectatorPanel.h" />
+    <ClInclude Include="hlsdk_headers\vgui_TeamFortressViewport.h" />
+    <ClInclude Include="hlsdk_headers\view.h" />
+    <ClInclude Include="hlsdk_headers\voice_banmgr.h" />
+    <ClInclude Include="hlsdk_headers\voice_common.h" />
+    <ClInclude Include="hlsdk_headers\voice_gamemgr.h" />
+    <ClInclude Include="hlsdk_headers\voice_status.h" />
+    <ClInclude Include="hlsdk_headers\voice_vgui_tweakdlg.h" />
+    <ClInclude Include="hlsdk_headers\weaponinfo.h" />
+    <ClInclude Include="hlsdk_headers\weapons.h" />
+    <ClInclude Include="hlsdk_headers\wrect.h" />
+    <ClInclude Include="hlsdk_headers\wxdebug.h" />
+    <ClInclude Include="SDKInclude.h" />
+    <ClInclude Include="MemoryScan.h" />
+    <ClInclude Include="OffsetScan.h" />
+    <ClInclude Include="ModuleSecurity.h" />
+    <ClInclude Include="Drawing.h" />
+    <ClInclude Include="Calculations.h" />
+    <ClInclude Include="ADE32.h" />
+    <ClInclude Include="Detour.h" />
+    <ClInclude Include="util.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="StudioModelRenderer.cpp" />
+    <ClCompile Include="ClientDll.cpp" />
+    <ClCompile Include="PreS_DynamicSound.cpp" />
+    <ClCompile Include="UserMsgs.cpp" />
+    <ClCompile Include="Events.cpp" />
+    <ClCompile Include="hlsdk_headers\parsemsg.cpp" />
+    <ClCompile Include="MemoryScan.cpp" />
+    <ClCompile Include="OffsetScan.cpp" />
+    <ClCompile Include="ModuleSecurity.cpp" />
+    <ClCompile Include="Drawing.cpp" />
+    <ClCompile Include="Calculations.cpp" />
+    <ClCompile Include="ADE32.cpp" />
+    <ClCompile Include="Detour.cpp" />
+    <ClCompile Include="DllMain.cpp" />
+    <ClCompile Include="util.cpp" />
+  </ItemGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <ImportGroup Label="ExtensionTargets">
+  </ImportGroup>
+</Project>
