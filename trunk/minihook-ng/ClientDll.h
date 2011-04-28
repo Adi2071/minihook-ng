@@ -88,4 +88,6 @@ int HUD_Redraw( float time, int intermission );
 int HUD_VidInit( void );
 void HUD_Init( void );
 int Initialize( cl_enginefunc_t *pEnginefuncs, int iVersion );
+
+
 #endif

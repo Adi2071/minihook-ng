@@ -44,7 +44,7 @@
     <ClCompile>
       <BufferSecurityCheck>false</BufferSecurityCheck>
       <RuntimeTypeInfo>false</RuntimeTypeInfo>
-      <WarningLevel>Level1</WarningLevel>
+      <WarningLevel>TurnOffAllWarnings</WarningLevel>
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
     </ClCompile>
     <Link>
@@ -58,6 +58,9 @@
     </ClCompile>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="cvar.h" />
+    <ClInclude Include="MenuDraw.h" />
+    <ClInclude Include="MenuElem.h" />
     <ClInclude Include="TransInclude.h" />
     <ClInclude Include="StudioModelRenderer.h" />
     <ClInclude Include="ClientDll.h" />
@@ -221,6 +224,9 @@
     <ClInclude Include="util.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="cvar.cpp" />
+    <ClCompile Include="MenuDraw.cpp" />
+    <ClCompile Include="MenuElem.cpp" />
     <ClCompile Include="StudioModelRenderer.cpp" />
     <ClCompile Include="ClientDll.cpp" />
     <ClCompile Include="PreS_DynamicSound.cpp" />

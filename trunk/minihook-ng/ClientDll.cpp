@@ -4,6 +4,9 @@
 #include "Calculations.h"
 #include "Drawing.h"
 
+#include "MenuElem.h"
+#include "MenuDraw.h"
+
 //========================= 
 // Initialize
 // 
@@ -47,7 +50,7 @@ int HUD_VidInit( void )
 int HUD_Redraw( float time, int intermission )
 {
 	int Result = gClientDll.HUD_Redraw(time, intermission);
-
+	CMenuDraw::Draw(gMenu, 0, 0);
 	return Result;
 }
 
