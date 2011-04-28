@@ -1,4 +1,4 @@
-#include <gl/gl.h>
+﻿#include <gl/gl.h>
 #include <gl/glu.h>
 //#include <gl/glaux.h>
 #pragma comment(lib, "OpenGL32.lib")
@@ -10,3 +10,9 @@
 #include "PreS_DynamicSound.h"
 #include "Events.h"
 #include "UserMsgs.h"
+#include "cvar.h"
+
+extern double *pGlobalTime;
+extern float *pFOV;
+
+

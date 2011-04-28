@@ -14,6 +14,8 @@ StudioModelRenderer_t	gStudioModelRenderer;
 ClientDll_t				gClientDll;
 cl_enginefunc_t			gEngfuncs;
 engine_studio_api_t		gStudio;
+double*					pGlobalTime;
+float*					pFOV;
 
 // engine structure pointers for hooking
 StudioModelRenderer_t*	pStudioModelRenderer;
@@ -426,15 +428,18 @@ void SetupHooks(void)
 	pClientDll = (ClientDll_t*)gOffsets.ClientFuncs();//OffsetExportTable();
 	pEngfuncs = (cl_enginefunc_t*)gOffsets.EngineFuncs();//OffsetEngineFunc();
 	pStudio = (engine_studio_api_t*)gOffsets.EngineStudio();//OffsetEngineStudio();
-	//pPreS_DynamicSound = (void*)OffsetPreSDynSound();
+	pGlobalTime = (double*)gOffsets.GlobalTime();
+	pFOV = (float*)gOffsets.FOV();
+
+	if(!pStudioModelRenderer || !pClientDll || !pEngfuncs || !pStudio || !pGlobalTime || !pFOV)// || !pPreS_DynamicSound)
+		return;
 
 	add_log("pStudioModelRenderer: 0x%X", pStudioModelRenderer);
 	add_log("pClientDll: 0x%X", pClientDll);
 	add_log("pEngfuncs: 0x%X", pEngfuncs);
 	add_log("pStudio: 0x%X", pStudio);
-
-	if(!pStudioModelRenderer || !pClientDll || !pEngfuncs || !pStudio)// || !pPreS_DynamicSound)
-		return;
+	add_log("pGlobalTime: 0x%X", pGlobalTime);
+	add_log("pFOV: 0x%X", pFOV);
 
 	// copy structs and classes
 	RtlCopyMemory(&gStudioModelRenderer, pStudioModelRenderer, sizeof(StudioModelRenderer_t));

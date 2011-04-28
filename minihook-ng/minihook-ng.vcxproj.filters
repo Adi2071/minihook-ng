@@ -46,6 +46,12 @@
     <Filter Include="Basic Utilities\Detours">
       <UniqueIdentifier>{8d8f050e-c925-46de-ab18-1f7a2df4e77a}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Menu">
+      <UniqueIdentifier>{25325c84-4f51-4213-9563-b4e919dabdb6}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Cvar">
+      <UniqueIdentifier>{fe35355f-a885-4462-9bb5-75f9628ccf3d}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="TransInclude.h">
@@ -531,6 +537,15 @@
     <ClInclude Include="util.h">
       <Filter>Basic Utilities</Filter>
     </ClInclude>
+    <ClInclude Include="MenuElem.h">
+      <Filter>Menu</Filter>
+    </ClInclude>
+    <ClInclude Include="MenuDraw.h">
+      <Filter>Menu</Filter>
+    </ClInclude>
+    <ClInclude Include="cvar.h">
+      <Filter>Cvar</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="StudioModelRenderer.cpp">
@@ -575,6 +590,15 @@
     <ClCompile Include="DllMain.cpp" />
     <ClCompile Include="util.cpp">
       <Filter>Basic Utilities</Filter>
+    </ClCompile>
+    <ClCompile Include="MenuElem.cpp">
+      <Filter>Menu</Filter>
+    </ClCompile>
+    <ClCompile Include="MenuDraw.cpp">
+      <Filter>Menu</Filter>
+    </ClCompile>
+    <ClCompile Include="cvar.cpp">
+      <Filter>Cvar</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

@@ -5,8 +5,7 @@
 #include <cstdio>
 using namespace std;
 
-#define LOG_FILE "d3d8.log"
-#define SETTINGS_FILE "d3d8_settings.xml"
+#define LOG_FILE "minihook-ng.log"
 
 char *GetDirectoryFile(char *filename);
 
