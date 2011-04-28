@@ -1,4 +1,6 @@
 #include <windows.h>
+#include <string>
+#include <vector>
 #include "SDKInclude.h"
 #include "TransInclude.h"
 #include "Calculations.h"
@@ -7,6 +9,125 @@
 #include "MenuElem.h"
 #include "MenuDraw.h"
 
+#include "client.h"
+#include "NoSpread.h"
+#include "norecoil.h"
+
+using namespace std;
+
+local_player_info me;
+VecPlayers vPlayers;
+
+//========================================================================================
+static bool isFakePlayer(int ax, cl_entity_s* ent);
+//========================================================================================
+static inline float GetDistanceFrom(const float* pos);
+//========================================================================================
+static void playerCalcExtraData(int ax, cl_entity_s* ent);
+//========================================================================================
+bool bIsEntValid(cl_entity_s * ent)
+{
+	cl_entity_s* localEnt = gEngfuncs.GetLocalPlayer();
+
+	if(ent && ent != localEnt && !(ent->curstate.effects & EF_NODRAW) && ent->player && !ent->curstate.spectator 
+		&& ent->curstate.solid && !(ent->curstate.messagenum < localEnt->curstate.messagenum))
+		return true;
+
+	return false;
+}
+
+//========================================================================================
+void updateLocalPlayer()
+{
+	me.entindex = 0;
+	cl_entity_s * itsme = gEngfuncs.GetLocalPlayer();
+	if(itsme)
+	{
+		me.entindex = itsme->index;
+	}
+}
+
+//========================================================================================
+static bool isFakePlayer(int ax, cl_entity_s* ent)
+{
+	register PlayerInfo& r = vPlayers[ax];
+	
+	if( ent->curstate.effects&EF_NODRAW ) { return true; }
+	if( ax==me.entindex )                 { return true; }
+	switch(ent->curstate.rendermode)
+	{
+	case kRenderTransColor:
+	case kRenderTransTexture: 
+		if( ent->curstate.renderamt<128 ) { return true;  }
+		else                              { return false; }
+	case kRenderNormal: { return false; }
+	default:            { return true;  }
+	}
+}
+
+//========================================================================================
+static inline float GetDistanceFrom(const float* pos)
+{	
+	register double a = pos[0] - me.pmEyePos[0];
+	register double b = pos[1] - me.pmEyePos[1];
+	register double c = pos[2] - me.pmEyePos[2];
+	return sqrt(a*a + b*b + c*c);
+}
+
+//========================================================================================
+void PlayerInfo::updateEntInfo()
+{
+	// this is the only place where pfnGetPlayerInfo should be called
+	gEngfuncs.pfnGetPlayerInfo(entindex, &entinfo);
+
+	if(!entinfo.name ) { entinfo.name  = "\\missing-name\\"; }
+	if(!entinfo.model) { entinfo.model = "unknown model";    } 
+}
+
+//========================================================================================
+static void playerCalcExtraData(int ax, cl_entity_s* ent)
+{
+	PlayerInfo& r = vPlayers[ax];
+
+	// playername and model
+	r.updateEntInfo();
+
+	// weapon
+	if( gStudio.GetModelByIndex )
+	{
+		model_s* mdl = gStudio.GetModelByIndex( ent->curstate.weaponmodel );
+		if(mdl && mdl->name )  
+		{
+			char tmp[32];
+			char szName[120];
+			
+			strcpy(szName,mdl->name);
+
+			int len = strlen(szName);
+
+			if( len > 14 && len < 120 )	// DOD source...
+			{
+				// e.g. "modles/w_awp.mdl"
+				if (strstr(szName, "shield"))
+				{
+					strcpy(tmp,szName+23); 
+					len -= 23;
+				}
+				else
+				{
+					strcpy(tmp,szName+9); 
+					len -=9;
+				}
+				tmp[len-4] = 0;                          // strip ".mdl"
+				r.setWeapon(tmp);
+			}
+		}
+	}
+
+	// distance
+	r.distance  = GetDistanceFrom (r.origin()); if(r.distance<1) r.distance=1; // avoid division by zero
+}
+
 //========================= 
 // Initialize
 // 
@@ -14,6 +135,13 @@
 //=========================
 int Initialize( cl_enginefunc_t *pEnginefuncs, int iVersion )
 {
+	SCREENINFO si;
+	si.iSize = sizeof(SCREENINFO);
+	gEngfuncs.pfnGetScreenInfo(&si);
+
+	m_iCenterX = si.iWidth / 2;
+	m_iCenterY = si.iHeight / 2;
+
 	return gClientDll.Initialize(pEnginefuncs, iVersion);
 }
 
@@ -50,6 +178,8 @@ int HUD_VidInit( void )
 int HUD_Redraw( float time, int intermission )
 {
 	int Result = gClientDll.HUD_Redraw(time, intermission);
+	updateLocalPlayer();
+
 	CMenuDraw::Draw(gMenu, 0, 0);
 	return Result;
 }
@@ -100,6 +230,20 @@ char HUD_PlayerMoveTexture( char *name )
 //==========
 void HUD_PlayerMove( struct playermove_s *ppmove, int server )
 {
+	me.pmFlags = ppmove->flags;
+	me.pmMoveType = ppmove->movetype;
+    VectorCopy(ppmove->velocity,me.pmVelocity);
+		
+	// copy origin+angles
+	gEngfuncs.pEventAPI->EV_LocalPlayerViewheight(me.pmEyePos);
+
+    me.pmEyePos[0] += ppmove->origin[0];
+	me.pmEyePos[1] += ppmove->origin[1];
+	me.pmEyePos[2] += ppmove->origin[2];
+
+	me.viewAngles[0] = ppmove->angles[0];
+	me.viewAngles[1] = ppmove->angles[1];
+	me.viewAngles[2] = ppmove->angles[2];
 	return gClientDll.HUD_PlayerMove(ppmove, server);
 }
 
@@ -152,7 +296,11 @@ void IN_ClearStates (void)
 //===============
 void CL_CreateMove ( float frametime, struct usercmd_s *cmd, int active )
 {	
-	return gClientDll.CL_CreateMove(frametime, cmd, active);
+	struct usercmd_s g_OriginalCmd;
+	gClientDll.CL_CreateMove(frametime, cmd, active);
+
+	memcpy(&g_OriginalCmd,cmd,sizeof(usercmd_s));
+
 }
 
 //==================
@@ -194,9 +342,57 @@ void CAM_Think( void )
 //=================
 void V_CalcRefdef( struct ref_params_s *pparams )
 {
+	if( pparams->nextView == 0 )
+	{
+		// recoil
+		VectorCopy(pparams->punchangle,me.punchangle);
+
+		//visual norecoil
+		pparams->punchangle[0] = 0;
+		pparams->punchangle[1] = 0;
+		pparams->punchangle[2] = 0;  
+
+		if(!me.alive)
+		{
+			// avoid problems with free chase cam view
+			// where me.pmOrigin is the viewed player
+			VectorCopy(pparams->vieworg,me.pmEyePos);
+		}
+	}
 	gClientDll.V_CalcRefdef(pparams);
-	VectorCopy(pparams->viewangles, viewangles);
-	VectorCopy(pparams->vieworg, vieworg);
+//	VectorCopy(pparams->viewangles, viewangles);
+//	VectorCopy(pparams->vieworg, vieworg);
+}
+
+static void AddEntityPlayer(struct cl_entity_s *ent)
+{
+	int px = ent->index;
+
+	if(ent->curstate.solid) { vPlayers[px].setAlive(); }
+	else { vPlayers[px].setDead(); }
+
+	// filter local player out out and set me.alive
+	if(ent->index == me.entindex) 
+	{ 
+		me.alive = vPlayers[px].isAlive();
+
+		vPlayers[px].distance = 100000.0;
+		vPlayers[px].visible  = false;
+		vPlayers[px].fovangle = 360;
+		vPlayers[px].points   = -999999;
+		vPlayers[px].updateClear(); 
+		return;
+	}
+	// filter trash entities
+	if( !isFakePlayer(px,ent) && vPlayers[px].isAlive() )
+	{
+		vPlayers[px].updateAddEntity(ent->origin);
+
+		playerCalcExtraData(px,ent);
+		//playerRenderOptions(ent);
+		
+		ent->curstate.rendermode = 0; // fix render mode
+	}
 }
 
 //=======================
@@ -205,6 +401,7 @@ void V_CalcRefdef( struct ref_params_s *pparams )
 //=======================
 int HUD_AddEntity( int type, struct cl_entity_s *ent, const char *modelname )
 {
+	if( ent->player) { AddEntityPlayer(ent); }
 	return gClientDll.HUD_AddEntity(type, ent, modelname);
 }
 
@@ -263,7 +460,8 @@ void HUD_StudioEvent( const struct mstudioevent_s *pevent, const struct cl_entit
 //====================
 void HUD_PostRunCmd( struct local_state_s *from, struct local_state_s *to, struct usercmd_s *cmd, int runfuncs, double time, unsigned int random_seed )
 {
-	return gClientDll.HUD_PostRunCmd(from, to, cmd, runfuncs, time, random_seed);
+	gClientDll.HUD_PostRunCmd(from, to, cmd, runfuncs, time, random_seed);
+	gNoSpread.HUD_PostRunCmd(from,to,cmd,runfuncs,time,random_seed);
 }
 
 //====================

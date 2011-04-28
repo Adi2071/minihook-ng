@@ -52,6 +52,12 @@
     <Filter Include="Cvar">
       <UniqueIdentifier>{fe35355f-a885-4462-9bb5-75f9628ccf3d}</UniqueIdentifier>
     </Filter>
+    <Filter Include="OGC Code">
+      <UniqueIdentifier>{e9fa9764-2327-4d48-bd3f-e4c79adbe455}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="No Spread/Recoil">
+      <UniqueIdentifier>{81ee51b2-1c12-48ca-aa30-75e0299df859}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="TransInclude.h">
@@ -546,6 +552,33 @@
     <ClInclude Include="cvar.h">
       <Filter>Cvar</Filter>
     </ClInclude>
+    <ClInclude Include="client.h">
+      <Filter>OGC Code</Filter>
+    </ClInclude>
+    <ClInclude Include="timehandling.h">
+      <Filter>OGC Code</Filter>
+    </ClInclude>
+    <ClInclude Include="weaponslist.h">
+      <Filter>OGC Code</Filter>
+    </ClInclude>
+    <ClInclude Include="playeritems.h">
+      <Filter>OGC Code</Filter>
+    </ClInclude>
+    <ClInclude Include="stringfinder.h">
+      <Filter>OGC Code</Filter>
+    </ClInclude>
+    <ClInclude Include="stdafx.h">
+      <Filter>OGC Code</Filter>
+    </ClInclude>
+    <ClInclude Include="norecoil.cpp">
+      <Filter>No Spread/Recoil</Filter>
+    </ClInclude>
+    <ClInclude Include="norecoil.h">
+      <Filter>No Spread/Recoil</Filter>
+    </ClInclude>
+    <ClInclude Include="NoSpread.h">
+      <Filter>No Spread/Recoil</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="StudioModelRenderer.cpp">
@@ -599,6 +632,21 @@
     </ClCompile>
     <ClCompile Include="cvar.cpp">
       <Filter>Cvar</Filter>
+    </ClCompile>
+    <ClCompile Include="weaponslist.cpp">
+      <Filter>OGC Code</Filter>
+    </ClCompile>
+    <ClCompile Include="playeritems.cpp">
+      <Filter>OGC Code</Filter>
+    </ClCompile>
+    <ClCompile Include="stringfinder.cpp">
+      <Filter>OGC Code</Filter>
+    </ClCompile>
+    <ClCompile Include="timehandling.cpp">
+      <Filter>OGC Code</Filter>
+    </ClCompile>
+    <ClCompile Include="NoSpread.cpp">
+      <Filter>No Spread/Recoil</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>
