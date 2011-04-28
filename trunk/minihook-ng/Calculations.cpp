@@ -1,10 +1,13 @@
 #include <windows.h>
 #include "SDKInclude.h"
 #include "Calculations.h"
+#include "client.h"
 
-float vieworg[3];		// Copy in V_CalcRefdef
-float viewangles[3];	// Copy in V_CalcRefdef
+float *vieworg = me.pmEyePos;		// Copy in V_CalcRefdef
+float *viewangles = me.viewAngles;	// Copy in V_CalcRefdef
 float FOV = 90.0f;		// Copy in UserMsg: SetFoc; Default: 90
+
+int m_iCenterX, m_iCenterY;
 
 float VectorLength(float* Vector)
 {
@@ -89,35 +92,15 @@ void inline RotateAxes(float *Vector, float* Angles, float* NewVector)
 	RotateAxisX(Temp, -(Angles[ROLL] * M_PI/180), NewVector);
 }
 
-int __fastcall WorldToScreen(float* World, float* Screen)
+int __fastcall CalcScreen(const float *origin, float *vecScreen)
 {
-	SCREENINFO Screeninfo;
-	float Temp[3], Camera[3], viewvector[3];
-
-	if(!World || !Screen)
-		return FALSE;
+	int result = gEngfuncs.pTriAPI->WorldToScreen( const_cast<float*>(origin),vecScreen);
 	
-	Screeninfo.iSize = sizeof(SCREENINFO);
-	gEngfuncs.pfnGetScreenInfo(&Screeninfo);
-
-	VectorSubtract(World, vieworg, Temp);
-
-	AngleToVector(viewangles, viewvector);
-	if(AngleOfVectors(viewvector, Temp) > FOV/1.8f)
-		return FALSE;
-
-	RotateAxes(Temp, viewangles, Camera);
-	if(Camera[0] <= 0.0f)
-		return FALSE;
-
-	float num = ((320.0f/Camera[0]) * (120.0f/FOV - 1.0f/3.0f));
-
-	Screen[0] = 320.0f - num * Camera[1];
-	Screen[1] = 240.0f - num * Camera[2];
-
-	#define BOUND_VALUE(var, min, max) if((var)>(max)){(var)=(max);};if((var)<(min)){(var)=(min);}
-	BOUND_VALUE(Screen[0], 0, Screeninfo.iWidth);
-	BOUND_VALUE(Screen[1], 0, Screeninfo.iHeight);
-
-	return TRUE;
+	if(vecScreen[0] < 1 && vecScreen[1] < 1 && vecScreen[0] > -1 && vecScreen[1] > -1 && !result)
+	{
+		vecScreen[0] =  vecScreen[0] * m_iCenterX + m_iCenterX;
+		vecScreen[1] = -vecScreen[1] * m_iCenterY + m_iCenterY;
+		return true;
+	}
+	return false;
 }

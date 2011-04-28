@@ -50,6 +50,7 @@
     <Link>
       <EntryPointSymbol>
       </EntryPointSymbol>
+      <AdditionalDependencies>kernel32.lib;user32.lib;winmm.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
@@ -58,9 +59,17 @@
     </ClCompile>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="client.h" />
     <ClInclude Include="cvar.h" />
     <ClInclude Include="MenuDraw.h" />
     <ClInclude Include="MenuElem.h" />
+    <ClInclude Include="norecoil.cpp" />
+    <ClInclude Include="norecoil.h" />
+    <ClInclude Include="NoSpread.h" />
+    <ClInclude Include="playeritems.h" />
+    <ClInclude Include="stdafx.h" />
+    <ClInclude Include="stringfinder.h" />
+    <ClInclude Include="timehandling.h" />
     <ClInclude Include="TransInclude.h" />
     <ClInclude Include="StudioModelRenderer.h" />
     <ClInclude Include="ClientDll.h" />
@@ -222,14 +231,19 @@
     <ClInclude Include="ADE32.h" />
     <ClInclude Include="Detour.h" />
     <ClInclude Include="util.h" />
+    <ClInclude Include="weaponslist.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="cvar.cpp" />
     <ClCompile Include="MenuDraw.cpp" />
     <ClCompile Include="MenuElem.cpp" />
+    <ClCompile Include="NoSpread.cpp" />
+    <ClCompile Include="playeritems.cpp" />
+    <ClCompile Include="stringfinder.cpp" />
     <ClCompile Include="StudioModelRenderer.cpp" />
     <ClCompile Include="ClientDll.cpp" />
     <ClCompile Include="PreS_DynamicSound.cpp" />
+    <ClCompile Include="timehandling.cpp" />
     <ClCompile Include="UserMsgs.cpp" />
     <ClCompile Include="Events.cpp" />
     <ClCompile Include="hlsdk_headers\parsemsg.cpp" />
@@ -242,6 +256,7 @@
     <ClCompile Include="Detour.cpp" />
     <ClCompile Include="DllMain.cpp" />
     <ClCompile Include="util.cpp" />
+    <ClCompile Include="weaponslist.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

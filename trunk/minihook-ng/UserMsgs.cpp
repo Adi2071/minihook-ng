@@ -2,6 +2,8 @@
 #include "SDKInclude.h"
 #include "TransInclude.h"
 #include "UserMsgs.h"
+#include "client.h"
+#include "NoSpread.h"
 
 // Counterstrike
 int hLogo(const char *pszName, int iSize, void *pbuf)
@@ -11,6 +13,15 @@ int hLogo(const char *pszName, int iSize, void *pbuf)
 
 int hResetHUD(const char *pszName, int iSize, void *pbuf)
 {
+	int Id = GetPriWeaponId();
+	if (Id == WEAPONLIST_SG550 || Id == WEAPONLIST_G3SG1)
+		me.spread.brokentime = 0.0f; // This catches all cases except when you buy one and than shoot some bullets and that buy another
+
+	me.spread.recoil = 0;
+	me.spread.prevtime = 0;
+	gNoSpread.DefaultSpreadVar(Id);
+	me.spread.firing = false;
+
 	return pResetHUD(pszName, iSize, pbuf);
 }
 
@@ -31,6 +42,13 @@ int hViewMode(const char *pszName, int iSize, void *pbuf)
 
 int hSetFOV(const char *pszName, int iSize, void *pbuf)
 {
+	BEGIN_READ( pbuf, iSize );
+	me.iFOV = READ_BYTE();
+	if(!me.iFOV)   { me.iFOV=90; }
+
+	if(me.iFOV==90){ me.inZoomMode=false; }
+	else           { me.inZoomMode=true;  } 
+
 	return pSetFOV(pszName, iSize, pbuf);
 }
 
@@ -146,6 +164,43 @@ int hServerName(const char *pszName, int iSize, void *pbuf)
 
 int hScoreInfo(const char *pszName, int iSize, void *pbuf)
 {
+	BEGIN_READ(pbuf, iSize);
+	int idx = READ_BYTE();
+	PlayerInfo& r = vPlayers[idx];
+
+	r.frags  = READ_SHORT();
+	r.deaths = READ_SHORT();
+
+	if(r.frags<=0 )   { r.ratio=0; }
+	else              { r.ratio = (double)r.frags / ((r.deaths<=0)?1:r.deaths); }
+
+	// update bestplayer
+	r.bestplayer = false;
+	bool foundbetter = false;
+	for(int i=0;i<MAX_VPLAYERS;i++)
+	{
+		if     ( r.ratio < vPlayers[i].ratio ) foundbetter = true;
+		else if( r.ratio > vPlayers[i].ratio ) vPlayers[i].bestplayer=false;
+	}
+	if(!foundbetter) r.bestplayer = true;
+
+	
+	// score handling:
+	if(idx==me.entindex)
+	{
+		static int lastfrags=0;
+		static int lastdeaths=0;
+
+		if(me.headshots>r.frags || r.frags==0) 
+		{ 
+			// reset statistics
+			me.headshots = 0; 
+			me.hspercent = 0;
+			lastfrags    = r.frags;
+			lastdeaths   = r.deaths;
+		}
+	}
+
 	return pScoreInfo(pszName, iSize, pbuf);
 }
 
@@ -156,6 +211,27 @@ int hTeamScore(const char *pszName, int iSize, void *pbuf)
 
 int hTeamInfo(const char *pszName, int iSize, void *pbuf)
 {
+	BEGIN_READ(pbuf,iSize);
+	int px = READ_BYTE();
+	char *teamtext = READ_STRING();
+
+	updateLocalPlayer();
+	if( strstr(teamtext, "TERRORIST"))
+	{
+		vPlayers[px].team = TEAM_TERROR;
+		if(px==me.entindex){ me.team = TEAM_TERROR; }
+	}
+	else if( strstr(teamtext, "CT"))
+	{
+		vPlayers[px].team = TEAM_CT;
+		if(px==me.entindex){ me.team = TEAM_CT; }
+	}
+	else
+	{
+		vPlayers[px].team = -1;
+		if(px==me.entindex){ me.team = -1; }
+	}
+
 	return pTeamInfo(pszName, iSize, pbuf);
 }
 
@@ -224,13 +300,64 @@ int hNVGToggle(const char *pszName, int iSize, void *pbuf)
 	return pNVGToggle(pszName, iSize, pbuf);
 }
 
+int iLastWeaponID = 0;
 int hCurWeapon(const char *pszName, int iSize, void *pbuf)
 {
+	BEGIN_READ( pbuf, iSize );
+	int iState = READ_BYTE();
+	int iID    = READ_CHAR();
+	int iClip  = READ_CHAR();
+	if (iState) me.iClip = iClip;
+
+	WeaponListCurWeapon(iState, iID, iClip);
+	playerItems.msgCurWeapon (iState,iID,iClip);
+
+	if (iID != iLastWeaponID)
+	{
+		iLastWeaponID      = iID;
+		me.spread.recoil   = 0;
+		me.spread.prevtime = 0;
+		me.spread.firing   = false;
+		gNoSpread.DefaultSpreadVar(iID);
+	}
+
+	// update our own weaponID:
+	if(iState)
+	{
+		char * name = playerItems.getNamebyId(iID);
+
+		if(!strcmp(name,"mp5navy")) me.iWeapon = WEAPONLIST_MP5;
+		else me.iWeapon = iID;
+	}
+
 	return pCurWeapon(pszName, iSize, pbuf);
 }
 
 int hWeaponList(const char *pszName, int iSize, void *pbuf)
 {
+	char *weaponname;
+	int ammo1type, max1, ammo2type, max2, slot, slotpos, id, flags;
+
+	BEGIN_READ(pbuf, iSize);
+
+	weaponname = READ_STRING();
+
+	ammo1type = READ_CHAR();
+	max1 = READ_BYTE();
+
+	ammo2type = READ_CHAR();
+	max2 = READ_BYTE();
+
+	slot = READ_CHAR();
+	slotpos = READ_CHAR();
+
+	id = READ_CHAR();
+	flags = READ_BYTE();
+
+	WeaponListAdd(weaponname, ammo1type, max1, ammo2type, max2, slot, slotpos, id, flags);
+
+	updateLocalPlayer();
+	playerItems.msgWeaponList(iSize,pbuf);
 	return pWeaponList(pszName, iSize, pbuf);
 }
 
@@ -266,6 +393,8 @@ int hCrosshair(const char *pszName, int iSize, void *pbuf)
 
 int hHealth(const char *pszName, int iSize, void *pbuf)
 {
+	BEGIN_READ( pbuf, iSize );
+	playerItems.health = READ_BYTE();
 	return pHealth(pszName, iSize, pbuf);
 }
 
@@ -281,6 +410,18 @@ int hRadar(const char *pszName, int iSize, void *pbuf)
 
 int hScoreAttrib(const char *pszName, int iSize, void *pbuf)
 {
+	BEGIN_READ(pbuf, iSize);
+    int idx  = READ_BYTE();
+    int info = READ_BYTE();
+    vPlayers[idx].iInfo = info;
+
+	//ApiImports->killDebuggers();
+
+	if(info&1) { vPlayers[idx].setDead (); }
+	else       { vPlayers[idx].setAlive(); }
+
+
+	if(idx==me.entindex) me.alive = ((info&1)==0);
 	return pScoreAttrib(pszName, iSize, pbuf);
 }
 
@@ -316,6 +457,8 @@ int hTrain(const char *pszName, int iSize, void *pbuf)
 
 int hBattery(const char *pszName, int iSize, void *pbuf)
 {
+	BEGIN_READ( pbuf, iSize );
+	playerItems.armor = READ_BYTE();
 	return pBattery(pszName, iSize, pbuf);
 }
 
@@ -366,6 +509,27 @@ int hStatusValue(const char *pszName, int iSize, void *pbuf)
 
 int hDeathMsg(const char *pszName, int iSize, void *pbuf)
 {
+	//DeathMsg: [B]Killer [B]Victim [B]Headshot [S]Weapon Name
+	BEGIN_READ( pbuf, iSize );
+	int killer = READ_BYTE();
+	int victim = READ_BYTE();
+	int headshot = READ_BYTE();
+	char* weaponName = READ_STRING();
+
+	vPlayers[victim].setDead();
+	if ((!victim || victim == -1))//suicide or team change
+	{
+		vPlayers[killer].setDead();
+	}
+
+	if(victim == me.entindex)
+		me.alive = false;
+
+	if(killer==me.entindex && headshot)
+	{
+		me.headshots++;
+	}
+
 	return pDeathMsg(pszName, iSize, pbuf);
 }
 
