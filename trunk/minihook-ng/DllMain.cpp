@@ -418,10 +418,8 @@ int HookUserMsg(char *szMsgName, pfnUserMsgHook pfn)
 //===========================
 void SetupHooks(void)
 {
-	while(!FindWindow("valve001", NULL)) Sleep(100);
-	Sleep(2000);
-
-	if(!gOffsets.Initialize()) return;
+	while(!gOffsets.Initialize()) Sleep(100);
+	Sleep(3000);
 
 	// find structs and classes
 	pStudioModelRenderer = (StudioModelRenderer_t*)gOffsets.StudioModelRenderer();//OffsetCStudioModelRenderer();
@@ -460,6 +458,7 @@ void SetupHooks(void)
 	HookClientFunction(HUD_Frame);
 	HookClientFunction(HUD_Key_Event);
 	HookClientFunction(HUD_TempEntUpdate);
+	HookClientFunction(CL_CreateMove);
 
 	// hook CStudioModelRenderer class functions
 	DWORD dwOldProt;

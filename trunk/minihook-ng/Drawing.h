@@ -10,4 +10,6 @@ void __fastcall DrawingSetColor(int r, int g, int b, int a);
 void DrawingBegin(void);
 void inline DrawingEnd(void);
 
+void DrawConString (int x, int y, int r, int g, int b, const char *fmt, ... );
+
 #endif

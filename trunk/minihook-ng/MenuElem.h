@@ -20,7 +20,8 @@ class CMenuElem
 	friend class CMenuDraw;
 public:
 	CMenuElem(std::string sText, enum ELEM_TYPE eType, void* pExtra);
-	~CMenuElem(void);
+
+	void AddElement(CMenuElem& rElem);
 
 	float SetMinimumValue(float fMin);
 	float SetMaximumValue(float fMax);
@@ -34,6 +35,8 @@ private:
 	int iMenuIndex;							// Index of selected menu element
 	std::vector<class CMenuElem> vElems;	// Vector list of all elements
 	class CMenuElem* pPrevMenu;				// Pointer to previous menu if this is a submenu
+	// for base menus
+	class CMenuElem* pCurMenu;				// Current menu
 
 	// for values
 	float fMinimumValue;					// Minimum possible value

@@ -12,11 +12,11 @@ bool COffsets::Initialize(void)
 	HwBase = (DWORD)GetModuleHandle("hw.dll");
 	HwSize = (DWORD)0x0122A000;
 	
-	if (!(ClBase && HwBase))
+	/*if (!(ClBase && HwBase))
 	{
 		ClBase = HwBase = (DWORD)GetModuleHandle(NULL);
 		ClSize = HwSize = (DWORD)0x02116000;
-	}
+	}*/
 	
 	return (ClBase && HwBase);
 }

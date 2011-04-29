@@ -63,7 +63,9 @@
     <ClInclude Include="cvar.h" />
     <ClInclude Include="MenuDraw.h" />
     <ClInclude Include="MenuElem.h" />
-    <ClInclude Include="norecoil.cpp" />
+    <ClCompile Include="norecoil.cpp">
+      <FileType>CppHeader</FileType>
+    </ClCompile>
     <ClInclude Include="norecoil.h" />
     <ClInclude Include="NoSpread.h" />
     <ClInclude Include="playeritems.h" />
