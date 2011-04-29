@@ -62,6 +62,7 @@ typedef struct
 	// not when you reload, switch weapons or pick up a weapon, this is do to the
 	// cs bugs for these guns (valve fix your code please)
 	float spreadvar;
+	float lastSG550SpreadVar;
 	float recoiltime;
 	bool firing;
 }spread_info;
@@ -245,5 +246,5 @@ public:
 	inline unsigned int size() { return MAX_VPLAYERS; }
 };
 extern VecPlayers vPlayers;
-
+extern float newangles[3];
 #endif

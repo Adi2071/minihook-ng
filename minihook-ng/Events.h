@@ -1,5 +1,5 @@
 #ifndef __EVENT__
-#define __EVENT__
+#define __EVENT_
 
 typedef void ( *pfnEvent )( struct event_args_s *args );
 

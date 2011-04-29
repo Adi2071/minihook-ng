@@ -24,6 +24,8 @@ private:
 	void AngleVectors(const float *angles, float *forward, float *right, float *up);
 	float GetVecSpread(float *velocity);
 	void GetSpreadXY(unsigned int seed, int future, float *velocity, float *vec);
+	DWORD BaseGun;
+    int WeaponBit;
 };
 extern cNoSpread gNoSpread;
 

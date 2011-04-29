@@ -142,6 +142,9 @@ int Initialize( cl_enginefunc_t *pEnginefuncs, int iVersion )
 	m_iCenterX = si.iWidth / 2;
 	m_iCenterY = si.iHeight / 2;
 
+	CMenuElem inPVS("In PVS", ELEM_VALUE, &cvar.inpvs);
+	gMenu.AddElement(inPVS);
+
 	return gClientDll.Initialize(pEnginefuncs, iVersion);
 }
 
@@ -154,6 +157,7 @@ int Initialize( cl_enginefunc_t *pEnginefuncs, int iVersion )
 //=========================
 void HUD_Init( void )
 {
+
 	return gClientDll.HUD_Init();
 }
 
@@ -180,7 +184,9 @@ int HUD_Redraw( float time, int intermission )
 	int Result = gClientDll.HUD_Redraw(time, intermission);
 	updateLocalPlayer();
 
-	CMenuDraw::Draw(gMenu, 0, 0);
+
+	//CMenuDraw::Draw(gMenu, 100, 100);
+
 	return Result;
 }
 
@@ -196,6 +202,9 @@ int HUD_Redraw( float time, int intermission )
 //=========================
 int HUD_UpdateClientData(client_data_t *pcldata, float flTime )
 {
+	if(pcldata)
+		WeaponListUpdate(pcldata->iWeaponBits);
+
 	return gClientDll.HUD_UpdateClientData(pcldata, flTime);
 }
 
@@ -300,7 +309,20 @@ void CL_CreateMove ( float frametime, struct usercmd_s *cmd, int active )
 	gClientDll.CL_CreateMove(frametime, cmd, active);
 
 	memcpy(&g_OriginalCmd,cmd,sizeof(usercmd_s));
+	if(cmd->buttons & IN_ATTACK)
+	{
+		vec3_t outspread,outrecoil;
 
+		ApplyNorecoil(frametime,me.punchangle,outrecoil);
+		gNoSpread.GetRecoilOffset(me.spread.random_seed,0,cmd->viewangles,me.pmVelocity,outspread);
+		newangles[0] = outrecoil[0] + outspread[0];
+		newangles[1] = outrecoil[1] + outspread[1];
+
+		gNoSpread.GetRecoilOffset(me.spread.random_seed,1,cmd->viewangles,me.pmVelocity,outspread);
+		ApplyNorecoil(frametime-1.0f,me.punchangle,outrecoil);
+		cmd->viewangles[0] = outrecoil[0] + outspread[0];
+		cmd->viewangles[1] = outrecoil[1] + outspread[1];
+	}
 }
 
 //==================

@@ -3,13 +3,17 @@
 #include "nospread.h"
 #include "SDKInclude.h"
 #include "TransInclude.h"
+#include "playeritems.h"
+#include "weaponslist.h"
 #include "client.h"
-
 #define WEAPONLIST_GALIL 14
 #define WEAPONLIST_FAMAS 15
 
 cNoSpread gNoSpread;
 float testspread = 1.0f;
+
+typedef DWORD (*BasePlayerWeapon_f)(int iWeaponId);
+BasePlayerWeapon_f GetBasePlayerWeapon;
 
 // helper functions:
 inline float VectorLength(const float *v)
@@ -113,167 +117,119 @@ float cNoSpread::UTIL_SharedRandomFloat(unsigned int seed, float low, float high
 	}
 }
 
-/*void cNoSpread::AngleVectors(const float *angles, float *forward, float *right, float *up)
-{
-	float		angle;
-	float		sr, sp, sy, cr, cp, cy;
-	
-	angle = angles[1] * (M_PI*2 / 360);
-	sy = sin(angle);
-	cy = cos(angle);
-	angle = angles[0] * (M_PI*2 / 360);
-	sp = sin(angle);
-	cp = cos(angle);
-	angle = angles[2] * (M_PI*2 / 360);
-	sr = sin(angle);
-	cr = cos(angle);
-
-	if (forward)
-	{
-		forward[0] = cp*cy;
-		forward[1] = cp*sy;
-		forward[2] = -sp;
-	}
-	if (right)
-	{
-		right[0] = (-1*sr*sp*cy+-1*cr*-sy);
-		right[1] = (-1*sr*sp*sy+-1*cr*cy);
-		right[2] = -1*sr*cp;
-	}
-	if (up)
-	{
-		up[0] = (cr*sp*cy+-sr*-sy);
-		up[1] = (cr*sp*sy+-sr*cy);
-		up[2] = cr*cp;
-	}
-}*/
-
 void cNoSpread::DefaultSpreadVar(int weaponid)
 {
 	int id = weaponid;
+	float& flSpreadVar = me.spread.spreadvar;
 
-	if (id == WEAPONLIST_DEAGLE)
-		me.spread.spreadvar = 0.9f;
-	else if (id == WEAPONLIST_MP5)
-		me.spread.spreadvar = 0.0f;
-	else if (id == WEAPONLIST_AK47)
-		me.spread.spreadvar = 0.2f;
-	else if (id == WEAPONLIST_SG552)
-		me.spread.spreadvar = 0.2f;
-	else if (id == WEAPONLIST_AUG)
-		me.spread.spreadvar = 0.3f;
-	else if (id == WEAPONLIST_M4A1)
-		me.spread.spreadvar = 0.2f;
-	else if (id == WEAPONLIST_M249)
-		me.spread.spreadvar = 0.2f;
-	else if (id == WEAPONLIST_MAC10)
-		me.spread.spreadvar = 0.15f;
-	else if (id == WEAPONLIST_UMP45)
-		me.spread.spreadvar = 0;
-	else if (id == WEAPONLIST_TMP)
-		me.spread.spreadvar = 0.2f;
-	else if(id == WEAPONLIST_P90)
-		me.spread.spreadvar = 0.15f;
-	else if (id == WEAPONLIST_P228)
-		me.spread.spreadvar = 0.9f;
-	else if (id == WEAPONLIST_FIVESEVEN)
-		me.spread.spreadvar = 0.92f;
-	else if (id == WEAPONLIST_ELITE)
-		me.spread.spreadvar = 0.88f;
-	else if (id == WEAPONLIST_GLOCK18)
-		me.spread.spreadvar = 0.9f;
-	else if (id == WEAPONLIST_USP)
-		me.spread.spreadvar = 0.92f;
-	else if (id == WEAPONLIST_G3SG1)
-		me.spread.spreadvar = 0.2f;
-	else if	 (id == WEAPONLIST_SG550)
-		me.spread.spreadvar = 0.2f;
-	else
-		me.spread.spreadvar = 0.0f;
+	switch ( id )
+	{
+		case WEAPONLIST_USP:
+			flSpreadVar = 0.92f;
+		break;
+
+		case WEAPONLIST_GLOCK18:
+			flSpreadVar = 0.9f;
+		break;
+
+		case WEAPONLIST_P228:
+			flSpreadVar = 0.9f;
+		break;
+
+		case WEAPONLIST_DEAGLE:
+			flSpreadVar = 0.9f;
+		break;
+
+		case WEAPONLIST_FIVESEVEN:
+			flSpreadVar = 0.92f;
+		break;
+
+		case WEAPONLIST_ELITE:
+			flSpreadVar = 0.88f;
+		break;
+
+		case WEAPONLIST_MAC10:
+			flSpreadVar = 0.15f;
+		break;
+
+		case WEAPONLIST_TMP:
+			flSpreadVar = 0.2f;
+		break;
+
+		case WEAPONLIST_MP5:
+			flSpreadVar = 0.0f;
+		break;
+
+		case WEAPONLIST_UMP45:
+			flSpreadVar = 0.0f;
+		break;
+
+		case WEAPONLIST_P90:
+			flSpreadVar = 0.2f;
+		break;
+
+		case WEAPONLIST_FAMAS:
+			flSpreadVar = 0.2f;
+		break;
+
+		case WEAPONLIST_GALIL:
+			flSpreadVar = 0.2f;
+		break;
+
+		case WEAPONLIST_AK47:
+			flSpreadVar = 0.2f;
+		break;
+
+		case WEAPONLIST_M4A1:
+			flSpreadVar = 0.2f;
+		break;
+
+		case WEAPONLIST_SG552:
+			flSpreadVar = 0.2f;
+		break;
+
+		case WEAPONLIST_AUG:
+			flSpreadVar = 0.2f;
+		break;
+
+		case WEAPONLIST_SG550:
+			flSpreadVar = me.spread.lastSG550SpreadVar;
+		break;
+
+		case WEAPONLIST_G3SG1:
+			flSpreadVar = 0.98f;
+		break;
+
+		case WEAPONLIST_M249:
+			flSpreadVar = 0.2f;
+		break;
+	}
 }
 
 void cNoSpread::HUD_PostRunCmd(struct local_state_s *from, struct local_state_s *to, struct usercmd_s *cmd, int runfuncs, double time, unsigned int random_seed)
 {
 	static int prevammo = 0, curammo;
 	int i, index, Id;
-	if(!from || !to || !cmd)return;
 	if(!me.alive)return;
 
-/*	if (runfuncs)
-	{
-		me.spread.random_seed = random_seed;
-
-		me.spread.gtime = time;
-
-		me.pmFlags = to->client.flags;
-		//glockburst
-		float FullNoSpread[3];
-		
-		int weaponID = to->client.m_iId;
-
-		if (cmd->buttons & IN_ATTACK && CanCurWeaponAttack()) // catch case when pistol and IN_ATTACK is always on and not firing
-		{
-		//	PrimaryAttack();
-		}
-		else if (!(cmd->buttons & (IN_ATTACK | IN_ATTACK2)))
-		{
-			if (me.spread.firing)
-			{
-				me.spread.firing = false;
-
-				if (me.spread.recoil > 15)
-					me.spread.recoil = 15;
-
-				me.spread.recoiltime = time + 0.4;
-			}
-
-			if (IsCurWeaponSec())
-			{
-				me.spread.recoil = 0;
-			}
-			else if (me.spread.recoil > 0)
-			{
-				if (me.spread.recoiltime <= time)
-				{
-					me.spread.recoiltime = me.spread.recoiltime + 0.0225;
-					me.spread.recoil--;
-				}
-			}
-		}
-		
-			static int last;
-			if (me.curWeaponID != last) // FIX: This doesn't catch when you have a weapon and you buy the same weapon
-			{
-				prevammo = 0;
-
-				me.spread.recoil = 0;
-				me.spread.prevtime = 0;
-				DefaultSpreadVar(me.curWeaponID);
-				me.spread.recoiltime = time;
-				me.spread.firing = false;
-				last = me.curWeaponID;
-			}
-
-		if (to->weapondata[me.curWeaponID].m_fInReload)
-		{
-			me.spread.recoil = 0;
-			me.spread.prevtime = 0;
-			DefaultSpreadVar(me.curWeaponID);
-			me.spread.recoiltime = time;
-			me.spread.firing = false;
-		}
-	}*/
 	if(runfuncs)
 	{
 		me.spread.random_seed = random_seed;
 
-		me.spread.gtime = time;
+		me.spread.gtime = *pGlobalTime;
 
 		me.prcflags = to->client.flags;
 
+		/*if (to->weapondata[to->client.m_iId].m_flNextPrimaryAttack <= 0.0f)
+		{
+			BaseGun = (DWORD)((PDWORD)((DWORD)GetModuleHandle("client.dll") + 0xF3DD4))[GetCurWeaponId()];
+			me.spread.spreadvar = *(float*)(BaseGun + 0xF8);
+			WeaponBit = *(int*)(BaseGun + 0x128);
+		}*/
+
 		if (cmd->buttons & IN_ATTACK && CanCurWeaponAttack()) // catch case when pistol and IN_ATTACK is always on and not firing
 		{
-		//	PrimaryAttack();
+			PrimaryAttack();
 		}
 		else if (!(cmd->buttons & (IN_ATTACK | IN_ATTACK2)))
 		{
@@ -350,598 +306,158 @@ void cNoSpread::HUD_PostRunCmd(struct local_state_s *from, struct local_state_s 
 
 void cNoSpread::PrimaryAttack(void)
 {
-	int id;
+	float& flSpreadVar = me.spread.spreadvar;
+	float& flOldTime = me.spread.prevtime;
+	float& flTime = me.spread.gtime;
+	int id = GetCurWeaponId();
 
-	id = me.iWeapon;
-
-	switch (id)
+	switch ( id )
 	{
-	case 26:
-		if (me.spread.prevtime)
+		case WEAPONLIST_GLOCK18:
 		{
-			me.spread.spreadvar = me.spread.spreadvar - (0.35 * (0.4 - (me.spread.gtime - me.spread.prevtime)));
+			if ( flOldTime )
+			{
+				flSpreadVar = flSpreadVar - ( 0.275f * ( 0.325 - ( flTime - flOldTime ) ) );
 
-			if (me.spread.spreadvar > 0.9)
-				me.spread.spreadvar = 0.9f;
-			else if (me.spread.spreadvar < 0.55)
-				me.spread.spreadvar = 0.55f;
+				if ( flSpreadVar > 0.9f )
+					flSpreadVar = 0.9f;
+				else if ( flSpreadVar < 0.6f )
+					flSpreadVar = 0.6f;
+			}
+	
+			flOldTime = flTime;
 		}
 
-		me.spread.recoil++;
-		me.spread.prevtime = me.spread.gtime;
-
 		break;
-	case 10:
-		if (me.spread.prevtime)
-		{
-			me.spread.spreadvar = me.spread.spreadvar - (0.275 * (0.325 - (me.spread.gtime - me.spread.prevtime)));
 
-			if (me.spread.spreadvar > 0.88)
-				me.spread.spreadvar = 0.88f;
-			else if (me.spread.spreadvar < 0.55)
-				me.spread.spreadvar = 0.55f;
+		case WEAPONLIST_USP:
+		{
+			if ( flOldTime )
+			{
+				flSpreadVar = flSpreadVar - ( 0.275f * ( 0.3f - ( flTime - flOldTime ) ) );
+
+				if ( flSpreadVar > 0.92f )
+					flSpreadVar = 0.92f;
+				else if ( flSpreadVar < 0.6f )
+					flSpreadVar = 0.6f;
+			}
+				
+			flOldTime = flTime;
 		}
 
-		me.spread.recoil++;
-		me.spread.prevtime = me.spread.gtime;
-
 		break;
-	case 14:
-		me.spread.recoil++;
-		me.spread.firing = true;
 
-		me.spread.spreadvar = ((float)me.spread.recoil * me.spread.recoil * me.spread.recoil) / 200.0f + 0.35f;
-
-		if (me.spread.spreadvar > 1.25)
-			me.spread.spreadvar = 1.25f;
-
-		me.spread.prevtime = me.spread.gtime;
-
-		break;
-	case 15:
-		me.spread.recoil++;
-		me.spread.firing = true;
-
-		me.spread.spreadvar = ((float)me.spread.recoil * me.spread.recoil * me.spread.recoil) / 215.0f + 0.3f;
-
-		if (me.spread.spreadvar > 1.0)
-			me.spread.spreadvar = 1.0f;
-
-		me.spread.prevtime = me.spread.gtime;
-
-		break;
-	case 11:
-		if (me.spread.prevtime)
+		case WEAPONLIST_P228:
 		{
-			me.spread.spreadvar = me.spread.spreadvar - (0.25 * (0.275 - (me.spread.gtime - me.spread.prevtime)));
+			if ( flOldTime )
+			{
+				flSpreadVar = flSpreadVar - ( 0.3f * ( 0.325f - ( flTime - flOldTime ) ) );
 
-			if (me.spread.spreadvar > 0.92)
-				me.spread.spreadvar = 0.92f;
-			else if (me.spread.spreadvar < 0.725)
-				me.spread.spreadvar = 0.725f;
+				if ( flSpreadVar > 0.9f )
+					flSpreadVar = 0.9f;
+				else if ( flSpreadVar < 0.6f )
+					flSpreadVar = 0.6f;
+			}
+
+			flOldTime = flTime;
 		}
 
-		me.spread.recoil++;
-		me.spread.prevtime = me.spread.gtime;
-
 		break;
-	case 17:
-		//if (!IsCurWeaponInBurst())
-			me.spread.recoil++;
 
-		if (me.spread.prevtime)
+		case WEAPONLIST_DEAGLE:
 		{
-			me.spread.spreadvar = me.spread.spreadvar - (0.275 * (0.325 - (me.spread.gtime - me.spread.prevtime)));
+			if ( flOldTime )
+			{
+				flSpreadVar = flSpreadVar - ( 0.35f * ( 0.4f - ( flTime - flOldTime ) ) );
 
-			if (me.spread.spreadvar > 0.9)
-				me.spread.spreadvar = 0.9f;
-			else if (me.spread.spreadvar < 0.6)
-				me.spread.spreadvar = 0.6f;
+				if ( flSpreadVar > 0.9f )
+					flSpreadVar = 0.9f;
+				else if ( flSpreadVar < 0.55f )
+					flSpreadVar = 0.55f;
+			}
+
+			flOldTime = flTime;
 		}
 
-		me.spread.prevtime = me.spread.gtime;
-
 		break;
-	case 1:
-		if (me.spread.prevtime)
-		{
-			me.spread.spreadvar = me.spread.spreadvar - (0.3 * (0.325 - (me.spread.gtime - me.spread.prevtime)));
 
-			if (me.spread.spreadvar > 0.9)
-				me.spread.spreadvar = 0.9f;
-			else if (me.spread.spreadvar < 0.6)
-				me.spread.spreadvar = 0.6f;
+		case WEAPONLIST_FIVESEVEN:
+		{
+			if ( flOldTime )
+			{
+				flSpreadVar = flSpreadVar - ( 0.25f * ( 0.275 - ( flTime - flOldTime ) ) );
+
+				if ( flSpreadVar > 0.92f )
+					flSpreadVar = 0.92f;
+				else if ( flSpreadVar < 0.725f )
+					flSpreadVar = 0.725f;
+			}
+
+			flOldTime = flTime;
+
 		}
 
-		me.spread.recoil++;
-		me.spread.prevtime = me.spread.gtime;
-
 		break;
-	case 24:
-		if (me.spread.brokentime)
-		{
-			me.spread.spreadvar = 0.55 + (0.3 * (me.spread.gtime - me.spread.brokentime));
 
-			if (me.spread.spreadvar > 0.98)
-				me.spread.spreadvar = 0.98f;
+		case WEAPONLIST_ELITE:
+		{
+			if ( flOldTime )
+			{
+				flSpreadVar = flSpreadVar - ( 0.275 * ( 0.325f - ( flTime - flOldTime ) ) );
+
+				if ( flSpreadVar > 0.88f )
+					flSpreadVar = 0.88f;
+				else if ( flSpreadVar < 0.55f )
+					flSpreadVar = 0.55f;
+			}
+
+			flOldTime = flTime;
 		}
 
-		me.spread.recoil++;
-		me.spread.brokentime = me.spread.gtime;
-		me.spread.firing = true;
-
 		break;
-	case 13:
-		if (me.spread.brokentime)
-		{
-			me.spread.spreadvar = 0.65 + (0.35 * (me.spread.gtime - me.spread.brokentime));
 
-			if (me.spread.spreadvar > 0.98)
-				me.spread.spreadvar = 0.98f;
+		case WEAPONLIST_SG550:
+		{
+			if ( flOldTime )
+			{
+				flSpreadVar = 0.65f + ( 0.35f * ( flTime - flOldTime ) );
+
+				if ( flSpreadVar > 0.98 )
+					flSpreadVar = 0.98f;
+			}
+
+			me.spread.lastSG550SpreadVar = flSpreadVar;
+
+			flOldTime = flTime;
 		}
 
-		me.spread.recoil++;
-		me.spread.brokentime = me.spread.gtime;
-		me.spread.firing = true;
-
 		break;
-	case 16:
-		if (me.spread.prevtime)
-		{
-			me.spread.spreadvar = me.spread.spreadvar - (0.275 * (0.3 - (me.spread.gtime - me.spread.prevtime)));
 
-			if (me.spread.spreadvar > 0.92)
-				me.spread.spreadvar = 0.92f;
-			else if (me.spread.spreadvar < 0.6)
-				me.spread.spreadvar = 0.6f;
+		case WEAPONLIST_G3SG1:
+		{
+			if ( flOldTime )
+			{
+				flSpreadVar = 0.55f + ( 0.3f * ( flTime - flOldTime ) );
+
+				if ( flSpreadVar > 0.98f )
+					flSpreadVar = 0.98f;
+			}
+			else
+				flSpreadVar = 0.98f;
+
+			flOldTime = flTime;
 		}
 
-		me.spread.recoil++;
-		me.spread.prevtime = me.spread.gtime;
-		break;
-	case 28:
-		me.spread.recoil++;
-		me.spread.firing = true;
-
-		me.spread.spreadvar = me.spread.recoil * me.spread.recoil * me.spread.recoil / 200.0f + 0.35;
-
-		if (me.spread.spreadvar > 1.25)
-			me.spread.spreadvar = 1.25f;
-
-		me.spread.prevtime = me.spread.gtime;
-
-		break;
-	case 27:
-		me.spread.recoil++;
-		me.spread.firing = true;
-
-		me.spread.spreadvar = me.spread.recoil * me.spread.recoil * me.spread.recoil / 220.0f + 0.3;
-
-		if (me.spread.spreadvar > 1)
-			me.spread.spreadvar = 1.0f;
-
-		me.spread.prevtime = me.spread.gtime;
-
-		break;
-	case 8:
-		me.spread.recoil++;
-		me.spread.firing = true;
-
-		me.spread.spreadvar = me.spread.recoil * me.spread.recoil * me.spread.recoil / 215.0f + 0.3;
-
-		if (me.spread.spreadvar > 1.0)
-			me.spread.spreadvar = 1.0f;
-
-		me.spread.prevtime = me.spread.gtime;
-
-		break;
-	case 20:
-		me.spread.recoil++;
-		me.spread.firing = true;
-
-		me.spread.spreadvar = me.spread.recoil * me.spread.recoil * me.spread.recoil / 175.0f + 0.4;
-
-		if (me.spread.spreadvar > 0.9)
-			me.spread.spreadvar = 0.9f;
-
-		me.spread.prevtime = me.spread.gtime;
-
-		break;
-	case 22:
-		me.spread.recoil++;
-		me.spread.firing = true;
-
-		me.spread.spreadvar = me.spread.recoil * me.spread.recoil * me.spread.recoil / 220.0f + 0.3;
-
-		if (me.spread.spreadvar > 1)
-			me.spread.spreadvar = 1.0f;
-
-		me.spread.prevtime = me.spread.gtime;
-
-		break;
-	case 19:
-		me.spread.recoil++;
-
-		me.spread.spreadvar = me.spread.recoil * me.spread.recoil * me.spread.recoil / 220.1f + 0.45; // CS 1.6 FIX
-
-		if (me.spread.spreadvar > 0.75)
-			me.spread.spreadvar = 0.75f;
-
-		me.spread.prevtime = me.spread.gtime;
-		me.spread.firing = true;
-
-		break;
-	case 7:
-		me.spread.recoil++;
-		me.spread.firing = true;
-
-		me.spread.spreadvar = me.spread.recoil * me.spread.recoil * me.spread.recoil / 200.0f + 0.6;
-
-		if (me.spread.spreadvar > 1.65)
-			me.spread.spreadvar = 1.65f;
-
-		me.spread.prevtime = me.spread.gtime;
-
-		break;
-	case 30:
-		me.spread.recoil++;
-		me.spread.firing = true;
-
-		me.spread.spreadvar = me.spread.recoil * me.spread.recoil / 175.0f + 0.45;
-
-		if (me.spread.spreadvar > 1)
-			me.spread.spreadvar = 1.0f;
-
-		me.spread.prevtime = me.spread.gtime;
-
-		break;
-	case 23:
-		me.spread.recoil++;
-		me.spread.firing = true;
-
-		me.spread.spreadvar = me.spread.recoil * me.spread.recoil * me.spread.recoil / 200.0f + 0.55;
-
-		if (me.spread.spreadvar > 1.4)
-			me.spread.spreadvar = 1.4f;
-
-		me.spread.prevtime = me.spread.gtime;
-
-		break;
-	case 12:
-		me.spread.recoil++;
-		me.spread.firing = true;
-
-		me.spread.spreadvar = me.spread.recoil * me.spread.recoil / 210.0f + 0.5;
-
-		if (me.spread.spreadvar > 1.0)
-			me.spread.spreadvar = 1.0f;
-
-		me.spread.prevtime = me.spread.gtime;
-
-		break;
-	case 18:
-		me.spread.recoil++;
-		me.spread.prevtime = me.spread.gtime;
-		me.spread.firing = true;
-
-		break;
-	case 3:
-		me.spread.recoil++;
-		me.spread.prevtime = me.spread.gtime;
-		me.spread.firing = true;
-
-		break;
-	default:
 		break;
 	}
-
 	return;
 }
 
 float cNoSpread::GetVecSpread(float *velocity)
 {
-	bool ducking;
-	int recoil;
-	float tmpvelocity[3], spread = 0;
 
-	recoil = me.spread.recoil;
 
-	if (gEngfuncs.GetEntityByIndex(me.entindex)->curstate.usehull)
-		ducking = true;
-	else
-		ducking = false;
-
-	float speed = Vector(velocity).Length();
-	int id = me.iWeapon;
-
-	switch (id)
-	{
-	case WEAPONLIST_DEAGLE:
-		if (me.pmFlags & FL_ONGROUND)
-		{
-			if (speed)
-				spread = 0.25 * (1.0f - me.spread.spreadvar);
-			else if (me.pmFlags & FL_DUCKING)
-				spread = 0.115 * (1.0f - me.spread.spreadvar);
-			else
-				spread = 0.13 * (1.0f - me.spread.spreadvar);
-		}
-		else
-			spread = 1.5 * (1.0f - me.spread.spreadvar);
-
-		break;
-	case WEAPONLIST_ELITE:
-		if (me.pmFlags & FL_ONGROUND)
-		{
-			if (speed)
-				spread = 0.175 * (1.0f - me.spread.spreadvar);
-			else if (me.pmFlags & FL_DUCKING)
-				spread = 0.08 * (1.0f - me.spread.spreadvar);
-			else
-				spread = 0.1 * (1.0f - me.spread.spreadvar);
-		}
-		else
-			spread = 1.3 * (1.0f - me.spread.spreadvar);
-
-		break;
-case WEAPONLIST_GALIL:
-		if (me.pmFlags & FL_ONGROUND)
-		{
-			if (speed > 140.0f)
-				spread = me.spread.spreadvar * 0.07 + 0.04;
-			else
-				spread = me.spread.spreadvar * 0.0375;
-		}
-		else
-			spread = me.spread.spreadvar * 0.4 + 0.03;
-
-		break;
-	case WEAPONLIST_FAMAS:
-		if (me.pmFlags & FL_ONGROUND)
-		{
-			if (speed > 140.0f)
-				spread = me.spread.spreadvar * 0.07 + 0.03;
-			else
-				spread = me.spread.spreadvar * 0.020;
-		}
-		else
-			spread = me.spread.spreadvar * 0.4 + .04;
-		break;
-	case WEAPONLIST_FIVESEVEN:
-		if (me.pmFlags & FL_ONGROUND)
-		{
-			if (speed)
-				spread = 0.255 * (1.0f - me.spread.spreadvar);
-			else if (me.pmFlags & FL_DUCKING)
-				spread = 0.075 * (1.0f - me.spread.spreadvar);
-			else
-				spread = 0.15 * (1.0f - me.spread.spreadvar);
-		}
-		else
-			spread = 1.5 * (1.0f - me.spread.spreadvar);
-
-		break;
-	case WEAPONLIST_GLOCK18:
-        {
-				if (!(me.pmFlags & FL_ONGROUND))
-					spread = 1.2 * (1 - me.spread.spreadvar);
-				else if (speed)
-					spread = 0.185 * (1 - me.spread.spreadvar);
-				else if (me.pmFlags & FL_DUCKING)
-					spread = 0.095 * (1 - me.spread.spreadvar);
-				else
-					spread = 0.3 * (1 - me.spread.spreadvar);
-        }
-		break;
-	case WEAPONLIST_P228:
-		if (me.pmFlags & FL_ONGROUND)
-		{
-			if (speed)
-				spread = 0.255 * (1.0f - me.spread.spreadvar);
-			else if (me.pmFlags & FL_DUCKING)
-				spread = 0.075 * (1.0f - me.spread.spreadvar);
-			else
-				spread = 0.15 * (1.0f - me.spread.spreadvar);
-		}
-		else
-			spread = 1.5 * (1.0f - me.spread.spreadvar);
-
-		break;
-	case WEAPONLIST_G3SG1:
-		if (me.pmFlags & FL_ONGROUND)
-		{
-			 if (speed > 100.0f)
-				spread = 0.15f;
-			else if (me.pmFlags & FL_DUCKING)
-				spread = 0.04f * (1.0f - me.spread.spreadvar);
-			else
-				spread = 0.06f * (1.0f - me.spread.spreadvar);
-		}
-		else
-			spread = 0.45f * (1.0f - me.spread.spreadvar);
-
-		break;
-	case WEAPONLIST_SG550:
-		if (me.pmFlags & FL_ONGROUND)
-		{
-			if (speed)
-				spread = 0.15f;
-			else if (me.pmFlags & FL_DUCKING)
-				spread = 0.04 * (1.0f - me.spread.spreadvar);
-			else
-				spread = 0.05 * (1.0f - me.spread.spreadvar);
-		}
-		else
-			spread = 0.45 * (1.0f - me.spread.spreadvar);
-
-		break;
-	case WEAPONLIST_USP:
-		if (me.pmFlags & FL_ONGROUND)
-			{
-				if (speed)
-					spread = 0.225 * (1.0f - me.spread.spreadvar);
-				else if (me.pmFlags & FL_DUCKING)
-					spread = 0.08 * (1.0f - me.spread.spreadvar);
-				else
-					spread = 0.1 * (1.0f - me.spread.spreadvar);
-			}
-			else
-				spread = 1.2 * (1.0f - me.spread.spreadvar);
-
-		break;
-	case WEAPONLIST_AK47:
-		if (me.pmFlags & FL_ONGROUND)
-		{
-			if (speed > 140.0f)
-				spread = me.spread.spreadvar * 0.07 + 0.04;
-			else
-				spread = me.spread.spreadvar * 0.0275;
-		}
-		else
-			spread = me.spread.spreadvar * 0.4 + .04;
-
-		break;
-	case WEAPONLIST_SG552:
-		if (me.pmFlags & FL_ONGROUND)
-		{
-			if (speed > 140.0f)
-				spread = me.spread.spreadvar * 0.07 + 0.035;
-			else
-				spread = me.spread.spreadvar * 0.02;
-		}
-		else
-			spread = me.spread.spreadvar * 0.4 + .035;
-
-		break;
-	case WEAPONLIST_AUG:
-		if (me.pmFlags & FL_ONGROUND)
-		{
-			if (speed > 140.0f)
-				spread = me.spread.spreadvar * 0.07 + 0.035;
-			else
-				spread = me.spread.spreadvar * 0.02;
-		}
-		else
-			spread = me.spread.spreadvar * 0.4 + .035;
-
-		break;
-	case WEAPONLIST_M249:
-		if (me.pmFlags & FL_ONGROUND)
-		{
-			if (speed > 140.0f)
-				spread = me.spread.spreadvar * 0.095 + 0.045;
-			else
-				spread = me.spread.spreadvar * 0.03;
-		}
-		else
-			spread = me.spread.spreadvar * 0.5 + .045;
-
-		break;
-	case WEAPONLIST_M4A1:
-		if (me.pmFlags & FL_ONGROUND)
-		{
-
-			{
-				if (speed > 140.0f)
-					spread = me.spread.spreadvar * 0.07 + 0.035;
-				else
-					spread = me.spread.spreadvar * 0.025;
-			}
-		}
-		else
-			spread = me.spread.spreadvar * 0.4 + .035;
-
-		break;
-	case WEAPONLIST_MP5:
-		if (me.pmFlags & FL_ONGROUND)
-			spread = 0.04 * me.spread.spreadvar;
-		else
-			spread = 0.2 * me.spread.spreadvar;
-		break;
-	case WEAPONLIST_MAC10:
-		if (me.pmFlags & FL_ONGROUND)
-			spread = 0.03 * me.spread.spreadvar;
-		else
-			spread = 0.375 * me.spread.spreadvar;
-
-		break;
-	case WEAPONLIST_P90:
-		if (me.pmFlags & FL_ONGROUND)
-		{
-			if (speed > 170.0f)
-				spread = me.spread.spreadvar * 0.115;
-			else
-				spread = me.spread.spreadvar * 0.045;
-		}
-		else
-			spread = me.spread.spreadvar * 0.3;
-
-		break;
-	case WEAPONLIST_TMP:
-		if (me.pmFlags & FL_ONGROUND)
-			spread = 0.03 * me.spread.spreadvar;
-		else
-			spread = 0.25 * me.spread.spreadvar;
-
-		break;
-	case WEAPONLIST_UMP45:
-		if (me.pmFlags & FL_ONGROUND)
-			spread = 0.04 * me.spread.spreadvar;
-		else
-			spread = 0.24 * me.spread.spreadvar;
-
-		break;
-	case WEAPONLIST_AWP:
-		if (me.pmFlags & FL_ONGROUND)
-		{
-			if (speed < 10.0f)
-			{
-				if (me.pmFlags & FL_DUCKING)
-					spread = 0;
-				else
-					spread = 0.001f;
-			}
-			else if (speed < 140.0f)
-			{
-				spread = 0.1f;
-			}
-			else
-				spread = 0.25f;
-		}
-		else
-			spread = 0.85f;
-
-		if (!(me.iFOV < 90.0f))
-			spread += 0.08f;
-
-		break;
-	case WEAPONLIST_SCOUT:
-		if (me.pmFlags & FL_ONGROUND)
-		{
-			if (speed < 170.0f)
-			{
-				if (me.pmFlags & FL_DUCKING)
-					spread = 0;
-				else
-					spread = 0.007f;
-			}
-			else
-				spread = 0.075f;
-		}
-		else
-			spread = 0.2f;
-
-		if (!(me.iFOV < 90.0f))
-			spread += 0.025f;
-
-		break;
-	default:
-		spread = 0;
-		break;
-	}
-
-	return spread;
-
+	return 0;
 }
 
 void cNoSpread::GetSpreadXY(unsigned int seed, int future, float *velocity, float *vec)
@@ -962,49 +478,6 @@ void cNoSpread::GetSpreadXY(unsigned int seed, int future, float *velocity, floa
 
 void cNoSpread::GetRecoilOffset(unsigned int seed, int future, float *inangles, float *velocity, float *outangles)
 {
-/*	float forward[3], right[3], up[3], vecDir[3];
-	float view[3], dest[3], diff[3], spread[2];
-
-	AngleVectors(inangles, forward, right, up);
-
-	spread[0] = 1.0f;
-	spread[1] = 1.0f;
-	GetSpreadXY(seed, future, velocity, spread);
-
-	vecDir[0] = forward[0] + spread[0] * right[0] + spread[1] * up[0];
-	view[0] = 8192 * vecDir[0];
-
-	vecDir[1] = forward[1] + spread[0] * right[1] + spread[1] * up[1];
-	view[1] = 8192 * vecDir[1];
-
-	vecDir[2] = forward[2] + spread[0] * right[2] + spread[1] * up[2];
-	view[2] = 8192 * vecDir[2];
-
-	VectorAngles(view, dest);
-	dest[0] *= -1;
-
-	diff[0] = inangles[0] - dest[0];
-	diff[1] = inangles[1] - dest[1];
-	diff[2] = 0;
-
-	//outangles[0] = inangles[0] + diff[0];
-
-	if (inangles[0] + diff[0] > 89)
-		inangles[0] = 89;
-
-	if (inangles[0] + diff[0] < -89)
-		inangles[0] = -89;
-
-	//outangles[1] =  inangles[1] + diff[1];
-
-	if (inangles[1] + diff[1] < 0)
-		inangles[1] += 360;
-
-	if (inangles[1] > 360)
-		inangles[1] -= 360;
-
-	outangles[2] = inangles[2];*/
-
 	float forward[3], right[3], up[3], vecDir[3];
 	float view[3], dest[3], spread[2];
 

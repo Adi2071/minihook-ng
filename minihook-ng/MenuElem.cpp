@@ -10,6 +10,13 @@ CMenuElem::CMenuElem(std::string sText, enum ELEM_TYPE eType, void* pExtra) {
 	pPrevMenu = NULL;
 
 	switch(eType) {
+		case ELEM_BASEMENU: {
+			pPrevMenu = this;
+			pCurMenu = this;
+		}
+		case ELEM_SUBMENU: {
+			pCurMenu = NULL;
+		}
 		case ELEM_VALUE: {
 			fMinimumValue = 0.0f;
 			fMaximumValue = 1.0f;
@@ -25,8 +32,9 @@ CMenuElem::CMenuElem(std::string sText, enum ELEM_TYPE eType, void* pExtra) {
 	}
 }
 
-CMenuElem::~CMenuElem(void)
-{
+void CMenuElem::AddElement(CMenuElem& rElem) {
+	vElems.push_back(rElem);
+	vElems.back().pPrevMenu = this;
 }
 
 float CMenuElem::SetMinimumValue(float fMin) {

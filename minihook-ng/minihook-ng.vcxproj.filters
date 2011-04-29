@@ -570,9 +570,6 @@
     <ClInclude Include="stdafx.h">
       <Filter>OGC Code</Filter>
     </ClInclude>
-    <ClInclude Include="norecoil.cpp">
-      <Filter>No Spread/Recoil</Filter>
-    </ClInclude>
     <ClInclude Include="norecoil.h">
       <Filter>No Spread/Recoil</Filter>
     </ClInclude>
@@ -646,6 +643,9 @@
       <Filter>OGC Code</Filter>
     </ClCompile>
     <ClCompile Include="NoSpread.cpp">
+      <Filter>No Spread/Recoil</Filter>
+    </ClCompile>
+    <ClCompile Include="norecoil.cpp">
       <Filter>No Spread/Recoil</Filter>
     </ClCompile>
   </ItemGroup>

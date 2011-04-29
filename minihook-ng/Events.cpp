@@ -1,6 +1,9 @@
 #include <windows.h>
 #include "SDKInclude.h"
 #include "TransInclude.h"
+#include "client.h"
+float newangles[3]; //for nospread
+
 
 // Counterstrike
 void hglock1( struct event_args_s *args )
@@ -55,131 +58,256 @@ void hvehicle( struct event_args_s *args )
 
 void husp( struct event_args_s *args )
 {
+	if (args->entindex == me.entindex)
+	{
+		VectorAdd(args->angles,newangles,args->angles);
+	}
 	pusp(args);
 }
 
 void hmp5n( struct event_args_s *args )
 {
+	if (args->entindex == me.entindex)
+	{
+		VectorAdd(args->angles,newangles,args->angles);
+	}
+
 	pmp5n(args);
 }
 
 void hak47( struct event_args_s *args )
 {
+	if (args->entindex == me.entindex)
+	{
+		VectorAdd(args->angles,newangles,args->angles);
+	}
+
 	pak47(args);
 }
 
 void haug( struct event_args_s *args )
 {
+	if (args->entindex == me.entindex)
+	{
+		VectorAdd(args->angles,newangles,args->angles);
+	}
+
 	paug(args);
 }
 
 void hdeagle( struct event_args_s *args )
 {
+	if (args->entindex == me.entindex)
+	{
+		VectorAdd(args->angles,newangles,args->angles);
+	}
+
 	pdeagle(args);
 }
 
 void hg3sg1( struct event_args_s *args )
 {
+	if (args->entindex == me.entindex)
+	{
+		VectorAdd(args->angles,newangles,args->angles);
+	}
+
 	pg3sg1(args);
 }
 
 void hsg550( struct event_args_s *args )
 {
+	if (args->entindex == me.entindex)
+	{
+		VectorAdd(args->angles,newangles,args->angles);
+	}
+
 	psg550(args);
 }
 
 void hglock18( struct event_args_s *args )
 {
+	if (args->entindex == me.entindex)
+	{
+		VectorAdd(args->angles,newangles,args->angles);
+	}
+
 	pglock18(args);
 }
 
 void hm249( struct event_args_s *args )
 {
+	if (args->entindex == me.entindex)
+	{
+		VectorAdd(args->angles,newangles,args->angles);
+	}
+
 	pm249(args);
 }
 
 void hm3( struct event_args_s *args )
 {
+	if (args->entindex == me.entindex)
+	{
+		VectorAdd(args->angles,newangles,args->angles);
+	}
+
 	pm3(args);
 }
 
 void hm4a1( struct event_args_s *args )
 {
+	if (args->entindex == me.entindex)
+	{
+		VectorAdd(args->angles,newangles,args->angles);
+	}
+
 	pm4a1(args);
 }
 
 void hmac10( struct event_args_s *args )
 {
+	if (args->entindex == me.entindex)
+	{
+		VectorAdd(args->angles,newangles,args->angles);
+	}
+
 	pmac10(args);
 }
 
 void hp90( struct event_args_s *args )
 {
+	if (args->entindex == me.entindex)
+	{
+		VectorAdd(args->angles,newangles,args->angles);
+	}
+
 	pp90(args);
 }
 
 void hp228( struct event_args_s *args )
 {
+	if (args->entindex == me.entindex)
+	{
+		VectorAdd(args->angles,newangles,args->angles);
+	}
+
 	pp228(args);
 }
 
 void hawp( struct event_args_s *args )
 {
+	if (args->entindex == me.entindex)
+	{
+		VectorAdd(args->angles,newangles,args->angles);
+	}
+
 	pawp(args);
 }
 
 void hscout( struct event_args_s *args )
 {
+	if (args->entindex == me.entindex)
+	{
+		VectorAdd(args->angles,newangles,args->angles);
+	}
+
 	pscout(args);
 }
 
 void hsg552( struct event_args_s *args )
 {
+	if (args->entindex == me.entindex)
+	{
+		VectorAdd(args->angles,newangles,args->angles);
+	}
+
 	psg552(args);
 }
 
 void htmp( struct event_args_s *args )
 {
+	if (args->entindex == me.entindex)
+	{
+		VectorAdd(args->angles,newangles,args->angles);
+	}
+
 	ptmp(args);
 }
 
 void hfiveseven( struct event_args_s *args )
 {
+	if (args->entindex == me.entindex)
+	{
+		VectorAdd(args->angles,newangles,args->angles);
+	}
+
 	pfiveseven(args);
 }
 
 void hump45( struct event_args_s *args )
 {
+	if (args->entindex == me.entindex)
+	{
+		VectorAdd(args->angles,newangles,args->angles);
+	}
+
 	pump45(args);
 }
 
 void hxm1014( struct event_args_s *args )
 {
+	if (args->entindex == me.entindex)
+	{
+		VectorAdd(args->angles,newangles,args->angles);
+	}
+
 	pxm1014(args);
 }
 
 void helite_left( struct event_args_s *args )
 {
+	if (args->entindex == me.entindex)
+	{
+		VectorAdd(args->angles,newangles,args->angles);
+	}
+
 	pelite_left(args);
 }
 
 void helite_right( struct event_args_s *args )
 {
+	if (args->entindex == me.entindex)
+	{
+		VectorAdd(args->angles,newangles,args->angles);
+	}
+
 	pelite_right(args);
 }
 
 void hknife( struct event_args_s *args )
 {
+
 	pknife(args);
 }
 
 void hgalil( struct event_args_s *args )
 {
+	if (args->entindex == me.entindex)
+	{
+		VectorAdd(args->angles,newangles,args->angles);
+	}
+
 	pgalil(args);
 }
 
 void hfamas( struct event_args_s *args )
 {
+	if (args->entindex == me.entindex)
+	{
+		VectorAdd(args->angles,newangles,args->angles);
+	}
+
 	pfamas(args);
 }
 
