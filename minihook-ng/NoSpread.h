@@ -28,5 +28,6 @@ private:
     int WeaponBit;
 };
 extern cNoSpread gNoSpread;
+extern PDWORD pdwGunTable;
 
 #endif

@@ -2,6 +2,7 @@
 #include <windows.h>
 #include <tlhelp32.h>
 #include <iostream>
+#include <vector>
 #include "Detour.h"
 #include "ModuleSecurity.h"
 #include "OffsetScan.h"
@@ -31,8 +32,21 @@ HANDLE PreSHandler;
 // AddCommand
 // Temporary cl_enginefuncs_s::AddCommand
 //===========================
+std::vector<Detour_c*> vCmdHooks;
 int AddCommand ( char *cmd_name, void (*function)(void) )
 {
+	#define HOOK_COMMAND(n) if (!strcmp(Name, #n)) { Detour_c *tmpdet = new Detour_c((DWORD)function, (DWORD)h##n); p##n = (pfnCommand)tmpdet->SetupDetour(); vCmdHooks.push_back(tmpdet); }
+	char Name[200];
+	strcpy(Name, cmd_name);
+
+	if(cmd_name[0] == '+') {
+		Name[0] = 'p';
+	}
+	else if(cmd_name[0] == '-') {
+		Name[0] = 'm';
+	}
+
+	HOOK_COMMAND(pattack2);
 	return 0;
 }
 
@@ -475,6 +489,7 @@ void SetupHooks(void)
 	pEngfuncs->pfnRegisterVariable = &RegisterVariable;
 	
 	gClientDll.Initialize(pEngfuncs, CLDLL_INTERFACE_VERSION);
+	Initialize(pEngfuncs, CLDLL_INTERFACE_VERSION);
 	gClientDll.HUD_Init();
 
 	pEngfuncs->Con_Printf("minihook-ng loaded.");

@@ -15,16 +15,20 @@ enum ELEM_TYPE {
 typedef void (*tMenuCallback)(void);
 
 class CMenuDraw;
+class CMenuControl;
 class CMenuElem
 {
 	friend class CMenuDraw;
+	friend class CMenuControl;
 public:
 	CMenuElem(std::string sText, enum ELEM_TYPE eType, void* pExtra);
 
-	void AddElement(CMenuElem& rElem);
+	void AddElement(CMenuElem rElem);
 
 	float SetMinimumValue(float fMin);
 	float SetMaximumValue(float fMax);
+
+	void Initialize();
 		
 private:
 	// general variables common to all types
@@ -36,6 +40,9 @@ private:
 	std::vector<class CMenuElem> vElems;	// Vector list of all elements
 	class CMenuElem* pPrevMenu;				// Pointer to previous menu if this is a submenu
 	// for base menus
+public:
+	bool bShow;
+private:
 	class CMenuElem* pCurMenu;				// Current menu
 
 	// for values
