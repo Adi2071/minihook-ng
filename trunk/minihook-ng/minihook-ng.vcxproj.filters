@@ -58,6 +58,9 @@
     <Filter Include="No Spread/Recoil">
       <UniqueIdentifier>{81ee51b2-1c12-48ca-aa30-75e0299df859}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Engine Calls\Commands">
+      <UniqueIdentifier>{be2aa255-551e-4302-bd01-4c4a8497b2de}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="TransInclude.h">
@@ -576,6 +579,10 @@
     <ClInclude Include="NoSpread.h">
       <Filter>No Spread/Recoil</Filter>
     </ClInclude>
+    <ClInclude Include="MenuControl.h" />
+    <ClInclude Include="Commands.h">
+      <Filter>Engine Calls\Commands</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="StudioModelRenderer.cpp">
@@ -647,6 +654,10 @@
     </ClCompile>
     <ClCompile Include="norecoil.cpp">
       <Filter>No Spread/Recoil</Filter>
+    </ClCompile>
+    <ClCompile Include="MenuControl.cpp" />
+    <ClCompile Include="Commands.cpp">
+      <Filter>Engine Calls\Commands</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

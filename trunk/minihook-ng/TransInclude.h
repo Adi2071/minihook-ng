@@ -9,6 +9,7 @@
 #include "ClientDll.h"
 #include "PreS_DynamicSound.h"
 #include "Events.h"
+#include "Commands.h"
 #include "UserMsgs.h"
 #include "cvar.h"
 

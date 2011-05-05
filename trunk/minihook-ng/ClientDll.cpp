@@ -5,9 +5,11 @@
 #include "TransInclude.h"
 #include "Calculations.h"
 #include "Drawing.h"
+#include "util.h"
 
 #include "MenuElem.h"
 #include "MenuDraw.h"
+#include "MenuControl.h"
 
 #include "client.h"
 #include "NoSpread.h"
@@ -17,6 +19,9 @@ using namespace std;
 
 local_player_info me;
 VecPlayers vPlayers;
+
+cvar_t* recoilVar1 = NULL;
+cvar_t* recoilVar2 = NULL;
 
 //========================================================================================
 static bool isFakePlayer(int ax, cl_entity_s* ent);
@@ -128,6 +133,41 @@ static void playerCalcExtraData(int ax, cl_entity_s* ent)
 	r.distance  = GetDistanceFrom (r.origin()); if(r.distance<1) r.distance=1; // avoid division by zero
 }
 
+void playerLights()
+{
+	for (int ax=0;ax<vPlayers.size();ax++)
+	{
+		cl_entity_t	*mee		= gEngfuncs.GetLocalPlayer();
+        cl_entity_t *ent	= gEngfuncs.GetEntityByIndex(ax);
+		dlight_t	*dl		= gEngfuncs.pEfxAPI->CL_AllocDlight(0);
+
+		int px = ax;
+
+		if(vPlayers[px].isAlive())//if the player is alive
+		{
+			if(mee->index == ent->index) //Check if the player is you
+			{continue;} //if it is, continue without drawing the light.
+			
+			if(vPlayers[px].team==1)//if the player is in team 1 (T)
+			{
+				dl->color.r = 255; //assign these colors
+				dl->color.g = 50;
+				dl->color.b = 50;
+			}
+			if(vPlayers[px].team==2)//if the player is on team2 (CT)
+			{
+				dl->color.r = 50; //assign these colors
+				dl->color.g = 50;
+				dl->color.b = 255;
+			}
+			
+			dl->origin	=	vPlayers[px].origin(); // this is the origin (location of the players)
+			dl->radius	=	150; //radius of the light
+			dl->die		=	gEngfuncs.GetClientTime() + 0.1; //after how long the light gets killed.
+		}
+	}
+}
+
 //========================= 
 // Initialize
 // 
@@ -142,8 +182,42 @@ int Initialize( cl_enginefunc_t *pEnginefuncs, int iVersion )
 	m_iCenterX = si.iWidth / 2;
 	m_iCenterY = si.iHeight / 2;
 
-	CMenuElem inPVS("In PVS", ELEM_VALUE, &cvar.inpvs);
-	gMenu.AddElement(inPVS);
+	//Visuals menu-------------------------------
+	CMenuElem crosshair("Crosshair", ELEM_VALUE, &cvar.crosshair);
+	CMenuElem dlightFollow("PlayerLights", ELEM_VALUE, &cvar.dlightfollow);
+
+	CMenuElem visualsMenu("Visuals", ELEM_SUBMENU, NULL);
+	visualsMenu.AddElement(crosshair);
+	visualsMenu.AddElement(dlightFollow);
+	
+
+	//Spread menu-------------------------------
+	CMenuElem noSpread("NoSpread", ELEM_VALUE, &cvar.nospread);
+	noSpread.SetMaximumValue(2.0f);
+
+	CMenuElem noRecoil("NoRecoil", ELEM_VALUE, &cvar.norecoil);
+	CMenuElem noVisRecoil("No Visual Recoil", ELEM_VALUE, &cvar.novisrecoil);
+
+	CMenuElem spreadMenu("Spread Correction", ELEM_SUBMENU, NULL);
+	spreadMenu.AddElement(noSpread);
+	spreadMenu.AddElement(noRecoil);
+	spreadMenu.AddElement(noVisRecoil);
+
+	//Weapons menu
+	CMenuElem zoomAll("Zoom All Weapons", ELEM_VALUE, &cvar.zoomall);
+
+	CMenuElem weaponsMenu("Weapon Stuff", ELEM_SUBMENU, NULL);
+	weaponsMenu.AddElement(zoomAll);
+
+	//Add all elements to basemenu-------------------------------
+	gMenu.Initialize();
+	gMenu.AddElement(visualsMenu);
+	gMenu.AddElement(spreadMenu);
+	gMenu.AddElement(weaponsMenu);
+
+	//Cvars-------------------------------
+	recoilVar1 = gEngfuncs.pfnRegisterVariable("mini_recoilvar1", "75", FCVAR_SERVER);
+	recoilVar2 = gEngfuncs.pfnRegisterVariable("mini_recoilvar2", "-105", FCVAR_SERVER);
 
 	return gClientDll.Initialize(pEnginefuncs, iVersion);
 }
@@ -184,8 +258,20 @@ int HUD_Redraw( float time, int intermission )
 	int Result = gClientDll.HUD_Redraw(time, intermission);
 	updateLocalPlayer();
 
+	if(cvar.dlightfollow)
+		playerLights();
 
-	//CMenuDraw::Draw(gMenu, 100, 100);
+	if(cvar.crosshair == 1.0f) {
+		DrawingBegin();
+		DrawingSetColor(255, 0, 0, 255);
+
+		DrawingDrawLine(m_iCenterX-5, m_iCenterY+1, m_iCenterX+7, m_iCenterY+1);
+		DrawingDrawLine(m_iCenterX+1, m_iCenterY-5, m_iCenterX+1, m_iCenterY+7);
+
+		DrawingEnd();
+	}
+
+	CMenuDraw::Draw(gMenu, 100, 100);
 
 	return Result;
 }
@@ -305,24 +391,25 @@ void IN_ClearStates (void)
 //===============
 void CL_CreateMove ( float frametime, struct usercmd_s *cmd, int active )
 {	
+	vec3_t outspread,outrecoil;
 	struct usercmd_s g_OriginalCmd;
 	gClientDll.CL_CreateMove(frametime, cmd, active);
 
 	memcpy(&g_OriginalCmd,cmd,sizeof(usercmd_s));
-	if(cmd->buttons & IN_ATTACK)
-	{
-		vec3_t outspread,outrecoil;
 
+	if(cvar.norecoil && !IsCurWeaponSec())
 		ApplyNorecoil(frametime,me.punchangle,outrecoil);
-		gNoSpread.GetRecoilOffset(me.spread.random_seed,0,cmd->viewangles,me.pmVelocity,outspread);
-		newangles[0] = outrecoil[0] + outspread[0];
-		newangles[1] = outrecoil[1] + outspread[1];
 
+	if((cmd->buttons & IN_ATTACK && CanCurWeaponAttack() && cvar.nospread == 1.0f) || cvar.nospread == 2.0f)
+	{
 		gNoSpread.GetRecoilOffset(me.spread.random_seed,1,cmd->viewangles,me.pmVelocity,outspread);
-		ApplyNorecoil(frametime-1.0f,me.punchangle,outrecoil);
-		cmd->viewangles[0] = outrecoil[0] + outspread[0];
-		cmd->viewangles[1] = outrecoil[1] + outspread[1];
 	}
+
+	newangles[0] = outspread[0] - outrecoil[0];
+	newangles[1] = outspread[1] - outrecoil[1];
+
+	cmd->viewangles[0] += newangles[0];
+	cmd->viewangles[1] += newangles[1];
 }
 
 //==================
@@ -367,12 +454,15 @@ void V_CalcRefdef( struct ref_params_s *pparams )
 	if( pparams->nextView == 0 )
 	{
 		// recoil
+		VectorCopy(me.punchangle, me.lastpunch);
 		VectorCopy(pparams->punchangle,me.punchangle);
 
 		//visual norecoil
-		pparams->punchangle[0] = 0;
-		pparams->punchangle[1] = 0;
-		pparams->punchangle[2] = 0;  
+		if(cvar.novisrecoil) {
+			pparams->punchangle[0] = 0;
+			pparams->punchangle[1] = 0;
+			pparams->punchangle[2] = 0;  
+		}
 
 		if(!me.alive)
 		{
@@ -578,7 +668,11 @@ void HUD_Frame( double time )
 //===========
 int HUD_Key_Event( int down, int keynum, const char *pszCurrentBinding )
 {
-	return gClientDll.HUD_Key_Event(down, keynum, pszCurrentBinding);
+	if(CMenuControl::HUD_Key_Event(down, keynum, pszCurrentBinding)) {
+		return gClientDll.HUD_Key_Event(down, keynum, pszCurrentBinding);
+	}
+
+	return 0;
 }
 
 //================

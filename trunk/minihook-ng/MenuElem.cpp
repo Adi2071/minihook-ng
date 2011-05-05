@@ -11,8 +11,7 @@ CMenuElem::CMenuElem(std::string sText, enum ELEM_TYPE eType, void* pExtra) {
 
 	switch(eType) {
 		case ELEM_BASEMENU: {
-			pPrevMenu = this;
-			pCurMenu = this;
+			bShow = false;
 		}
 		case ELEM_SUBMENU: {
 			pCurMenu = NULL;
@@ -32,7 +31,14 @@ CMenuElem::CMenuElem(std::string sText, enum ELEM_TYPE eType, void* pExtra) {
 	}
 }
 
-void CMenuElem::AddElement(CMenuElem& rElem) {
+void CMenuElem::Initialize() {
+	if(ElemType == ELEM_BASEMENU) {
+		pCurMenu = this;
+		pPrevMenu = this;
+	}
+}
+
+void CMenuElem::AddElement(CMenuElem rElem) {
 	vElems.push_back(rElem);
 	vElems.back().pPrevMenu = this;
 }

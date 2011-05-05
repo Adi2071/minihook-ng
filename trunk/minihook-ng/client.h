@@ -65,6 +65,7 @@ typedef struct
 	float lastSG550SpreadVar;
 	float recoiltime;
 	bool firing;
+	int WeaponState;
 }spread_info;
 
 struct local_player_info
@@ -82,6 +83,7 @@ struct local_player_info
 	bool inZoomMode;
 	bool alive;
 	float punchangle[3];
+	float lastpunch[3];
 	int pmFlags; 
 	int pmMoveType; // movetype 5 = ladder
 	float pmVelocity[3];
@@ -108,7 +110,7 @@ class PlayerInfo
 private:
 	int     m_lastUpdateType;
 	double  m_lastUpdateTime;
-	float   m_origin[3];
+	vec3_t   m_origin;
 	char    m_weapon[32];
 
 	bool alive;
@@ -205,7 +207,7 @@ public:
 	bool   isUpdated       ()    { return m_lastUpdateType!=UPDATE_MISSING; }
 	bool   isUpdatedAddEnt ()    { return m_lastUpdateType==UPDATE_ADDENT;  }
 	int    updateType()          { return m_lastUpdateType; }
-	const float * origin()       { return m_origin; }
+	vec3_t  origin()       { return m_origin; }
 	float  timeSinceLastUpdate() { return (float)(ClientTime::current-m_lastUpdateTime); }
 	
 
