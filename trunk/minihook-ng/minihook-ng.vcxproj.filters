@@ -61,6 +61,9 @@
     <Filter Include="Engine Calls\Commands">
       <UniqueIdentifier>{be2aa255-551e-4302-bd01-4c4a8497b2de}</UniqueIdentifier>
     </Filter>
+    <Filter Include="OpenGL">
+      <UniqueIdentifier>{4c5a991a-1931-4ae3-bb06-03560381796b}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="TransInclude.h">
@@ -579,9 +582,14 @@
     <ClInclude Include="NoSpread.h">
       <Filter>No Spread/Recoil</Filter>
     </ClInclude>
-    <ClInclude Include="MenuControl.h" />
     <ClInclude Include="Commands.h">
       <Filter>Engine Calls\Commands</Filter>
+    </ClInclude>
+    <ClInclude Include="opengl.h">
+      <Filter>OpenGL</Filter>
+    </ClInclude>
+    <ClInclude Include="MenuControl.h">
+      <Filter>Menu</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -655,9 +663,14 @@
     <ClCompile Include="norecoil.cpp">
       <Filter>No Spread/Recoil</Filter>
     </ClCompile>
-    <ClCompile Include="MenuControl.cpp" />
     <ClCompile Include="Commands.cpp">
       <Filter>Engine Calls\Commands</Filter>
+    </ClCompile>
+    <ClCompile Include="opengl.cpp">
+      <Filter>OpenGL</Filter>
+    </ClCompile>
+    <ClCompile Include="MenuControl.cpp">
+      <Filter>Menu</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

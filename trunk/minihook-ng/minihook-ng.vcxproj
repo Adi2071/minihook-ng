@@ -72,6 +72,7 @@
     </ClCompile>
     <ClInclude Include="norecoil.h" />
     <ClInclude Include="NoSpread.h" />
+    <ClInclude Include="opengl.h" />
     <ClInclude Include="playeritems.h" />
     <ClInclude Include="stdafx.h" />
     <ClInclude Include="stringfinder.h" />
@@ -244,6 +245,7 @@
     <ClCompile Include="MenuDraw.cpp" />
     <ClCompile Include="MenuElem.cpp" />
     <ClCompile Include="NoSpread.cpp" />
+    <ClCompile Include="opengl.cpp" />
     <ClCompile Include="playeritems.cpp" />
     <ClCompile Include="stringfinder.cpp" />
     <ClCompile Include="StudioModelRenderer.cpp" />

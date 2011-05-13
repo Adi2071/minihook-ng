@@ -2,7 +2,7 @@
 #define __DRAWING__
 
 
-void __fastcall DrawingDrawCircle(int x, int y, int r, bool solid);
+void __fastcall DrawingDrawCircle(int x, int y, int radius);
 void __fastcall DrawingDrawLine(int xs, int ys, int xe, int ye);
 void __fastcall DrawingDrawRectangle(int x, int y, int w, int h, bool solid);
 void __fastcall DrawingSetLineWidth(float w);

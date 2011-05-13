@@ -15,6 +15,7 @@
 #include "timehandling.h"
 #include "weaponslist.h"
 #include "playeritems.h"
+#include "util.h"
 
 #define TEAM_TERROR 1
 #define TEAM_CT		2
@@ -91,6 +92,8 @@ struct local_player_info
 
 	float viewAngles[3];
 
+	float frametime;
+
 	int entindex;
 	//int kills;  // already found in playerinfo
 	//int deaths; // already found in playerinfo
@@ -104,7 +107,7 @@ extern local_player_info me;
 
 
 //================================================================
-enum    { MAX_TARGET_SPOTS=10 };
+enum    { MAX_TARGET_SPOTS=55 };
 class PlayerInfo 
 {
 private:
@@ -133,6 +136,7 @@ protected:
 		entindex = _entindex;
 		distance = 1000.0;
 		visible  = false;
+		gotbones = false;
 		frags=0;
 		deaths=0;
 		ratio=0;
@@ -151,6 +155,8 @@ public:
 	int    iInfo;
 	float  distance;
 	bool   visible;
+
+	bool gotbones;
 
 	// infos needed for points system:
 	int    frags;
@@ -223,8 +229,6 @@ public:
 	PlayerInfo() { init(0); }
 };
 
-
-
 //================================================================
 enum{  MAX_VPLAYERS =36 };
 class VecPlayers
@@ -246,6 +250,13 @@ public:
 	}
 	
 	inline unsigned int size() { return MAX_VPLAYERS; }
+
+	void ClearTargetSpots(void) {
+		for(int i = 0; i < size(); i++) {
+			players[i].gotbones = false;
+			players[i].numTargetSpots = 0;
+		}
+	}
 };
 extern VecPlayers vPlayers;
 extern float newangles[3];

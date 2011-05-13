@@ -9,6 +9,7 @@
 #include "SDKInclude.h"
 #include "TransInclude.h"
 #include "util.h"
+#include "opengl.h"
 
 // engine structure copies for global usage
 StudioModelRenderer_t	gStudioModelRenderer;
@@ -47,6 +48,7 @@ int AddCommand ( char *cmd_name, void (*function)(void) )
 	}
 
 	HOOK_COMMAND(pattack2);
+	HOOK_COMMAND(preload);
 	return 0;
 }
 
@@ -500,15 +502,24 @@ void SetupHooks(void)
 	pEngfuncs->pfnRegisterVariable = gEngfuncs.pfnRegisterVariable;
 }
 
+Detour_c *detGetProcAddress = NULL;
+bool bGetProcDetoured = false;
+FARPROC (WINAPI*oGetProcAddress)(HMODULE hModule, LPCSTR lpProcName);
+FARPROC WINAPI xGetProcAddress(HMODULE hModule, LPCSTR lpProcName) {
+	if(hModule == GetModuleHandle("opengl32") ) {
+		return HookOpenGL(lpProcName, oGetProcAddress(hModule, lpProcName));
+	}
+	else {
+		return oGetProcAddress(hModule, lpProcName);
+	}
+}
+
 Detour_c *detLoadLibrary = NULL;
-typedef HMODULE (WINAPI* tLoadLibraryA)(LPCSTR);
-tLoadLibraryA oLoadLibraryA = NULL;
+HMODULE (WINAPI*oLoadLibraryA)(LPCSTR lpFileName) = NULL;
 HMODULE WINAPI xLoadLibraryA(LPCSTR lpFileName) {
 
 	if(strstr(lpFileName, "client.dll")) {
 		CreateThread(NULL, 0, (LPTHREAD_START_ROUTINE)SetupHooks, NULL, 0, NULL);
-		detLoadLibrary->RemoveDetour();
-		return LoadLibraryA(lpFileName);
 	}
 
 	return oLoadLibraryA(lpFileName);
@@ -527,7 +538,10 @@ BOOL WINAPI DllMain(HINSTANCE hinstDLL, DWORD fdwReason, PVOID unused)
 		init_log(hinstDLL);
 
 		detLoadLibrary = new Detour_c((DWORD)LoadLibraryA, (DWORD)xLoadLibraryA);
-		oLoadLibraryA = (tLoadLibraryA)detLoadLibrary->SetupDetour();
+		oLoadLibraryA = (HMODULE(WINAPI*)(LPCSTR))detLoadLibrary->SetupDetour();
+
+		detGetProcAddress = new Detour_c((DWORD)GetProcAddress, (DWORD)xGetProcAddress);
+		oGetProcAddress = (FARPROC(WINAPI*)(HMODULE,LPCSTR))detGetProcAddress->SetupDetour();
 	}
 
 	if(fdwReason == DLL_PROCESS_DETACH) {
