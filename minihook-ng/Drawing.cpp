@@ -89,7 +89,7 @@ void __fastcall DrawingDrawLine(int xs, int ys, int xe, int ye)
 // DrawingDrawCircle
 // Draws a circle with given radius
 //=============================
-void __fastcall DrawingDrawCircle(int x, int y, int r, bool solid)
+/*void __fastcall DrawingDrawCircle(int x, int y, int r, bool solid)
 {
 	float vectorX, vectorY1 = (float)y + r;
 	float vectorY, vectorX1 = (float)x;
@@ -103,6 +103,27 @@ void __fastcall DrawingDrawCircle(int x, int y, int r, bool solid)
 		vectorX1 = vectorX;			
 	}
 	glEnd();
+}*/
+
+void __fastcall DrawingDrawCircle(int x, int y, int radius) {
+	#define PI 3.1415926
+	glLineWidth(1.0f); 
+	glBegin(GL_POLYGON); 
+	glVertex2i(x+radius, y); //freebies
+	glVertex2i(x-radius, y);
+	glVertex2i(x, y+radius);
+	glVertex2i(x, y-radius);
+	float xmod, ymod, step = PI / (4*radius); //don't compute much more than is necessary for a solid circle
+	for(float theta = 0; theta <= PI/2; theta += step)
+	{
+		xmod = (cos(theta) * radius);
+		ymod = (sin(theta) * radius);
+		glVertex2f(x + xmod, y + ymod); //create solids by vertices
+		glVertex2f(x + xmod, y - ymod); //and using glpolygon for filling
+		glVertex2f(x - xmod, y + ymod); 
+		glVertex2f(x - xmod, y - ymod);
+	} 
+	glEnd(); 
 }
 
 //================================================================

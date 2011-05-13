@@ -143,7 +143,7 @@ void playerLights()
 
 		int px = ax;
 
-		if(vPlayers[px].isAlive())//if the player is alive
+		if(vPlayers[px].isAlive() && vPlayers[px].isUpdated())//if the player is alive
 		{
 			if(mee->index == ent->index) //Check if the player is you
 			{continue;} //if it is, continue without drawing the light.
@@ -162,8 +162,8 @@ void playerLights()
 			}
 			
 			dl->origin	=	vPlayers[px].origin(); // this is the origin (location of the players)
-			dl->radius	=	150; //radius of the light
-			dl->die		=	gEngfuncs.GetClientTime() + 0.1; //after how long the light gets killed.
+			dl->radius	=	200; //radius of the light
+			dl->die		=	gEngfuncs.GetClientTime() + 0.2; //after how long the light gets killed.
 		}
 	}
 }
@@ -184,11 +184,15 @@ int Initialize( cl_enginefunc_t *pEnginefuncs, int iVersion )
 
 	//Visuals menu-------------------------------
 	CMenuElem crosshair("Crosshair", ELEM_VALUE, &cvar.crosshair);
+	crosshair.SetMaximumValue(2.0f);
 	CMenuElem dlightFollow("PlayerLights", ELEM_VALUE, &cvar.dlightfollow);
+	CMenuElem showBone("Show Bones", ELEM_VALUE, &cvar.bone);
+
 
 	CMenuElem visualsMenu("Visuals", ELEM_SUBMENU, NULL);
 	visualsMenu.AddElement(crosshair);
 	visualsMenu.AddElement(dlightFollow);
+	visualsMenu.AddElement(showBone);
 	
 
 	//Spread menu-------------------------------
@@ -205,19 +209,30 @@ int Initialize( cl_enginefunc_t *pEnginefuncs, int iVersion )
 
 	//Weapons menu
 	CMenuElem zoomAll("Zoom All Weapons", ELEM_VALUE, &cvar.zoomall);
+	CMenuElem autoFire("Autofire", ELEM_VALUE, &cvar.autofire);
 
 	CMenuElem weaponsMenu("Weapon Stuff", ELEM_SUBMENU, NULL);
 	weaponsMenu.AddElement(zoomAll);
+	weaponsMenu.AddElement(autoFire);
+
+	//Others menu
+	CMenuElem bunnyHop("Bunny Hop", ELEM_VALUE, &cvar.bunnyhop);
+	CMenuElem spinBot("Spin Bot", ELEM_VALUE, &cvar.spinbot);
+
+	CMenuElem othersMenu("Others", ELEM_SUBMENU, NULL);
+	othersMenu.AddElement(bunnyHop);
+	othersMenu.AddElement(spinBot);
 
 	//Add all elements to basemenu-------------------------------
 	gMenu.Initialize();
 	gMenu.AddElement(visualsMenu);
 	gMenu.AddElement(spreadMenu);
 	gMenu.AddElement(weaponsMenu);
+	gMenu.AddElement(othersMenu);
 
 	//Cvars-------------------------------
-	recoilVar1 = gEngfuncs.pfnRegisterVariable("mini_recoilvar1", "75", FCVAR_SERVER);
-	recoilVar2 = gEngfuncs.pfnRegisterVariable("mini_recoilvar2", "-105", FCVAR_SERVER);
+	recoilVar1 = gEngfuncs.pfnRegisterVariable("mini_recoilvar1", "20", FCVAR_SERVER);
+	recoilVar2 = gEngfuncs.pfnRegisterVariable("mini_recoilvar2", "-35", FCVAR_SERVER);
 
 	return gClientDll.Initialize(pEnginefuncs, iVersion);
 }
@@ -248,6 +263,60 @@ int HUD_VidInit( void )
 }
 
 //=========================
+// DrawingDraw
+// 
+// called in HUD_Redraw to
+// draw things using the
+// Drawing* functions
+//==========================
+void DrawingDraw(void)
+{
+	if(cvar.crosshair) {
+		int velfactor = (int)VectorLength(me.pmVelocity)/50.0f;
+		int recfactor = me.spread.recoil;
+		if(recfactor > 10)
+			recfactor = 10;
+		int offset = velfactor + recfactor;
+
+		DrawingSetColor(255, 0, 0, 255);
+		switch((int)cvar.crosshair) {
+			case 1: {
+				DrawingDrawLine(m_iCenterX-9, m_iCenterY+1, m_iCenterX+10, m_iCenterY+1);
+				DrawingDrawLine(m_iCenterX+1, m_iCenterY-10, m_iCenterX+1, m_iCenterY+10);
+				break;
+			}
+
+			case 2: {
+				DrawingDrawLine(m_iCenterX-9-offset, m_iCenterY+1, m_iCenterX-offset, m_iCenterY+1);
+				DrawingDrawLine(m_iCenterX+offset, m_iCenterY+1, m_iCenterX+9+offset, m_iCenterY+1);
+				DrawingDrawLine(m_iCenterX+1, m_iCenterY-10-offset, m_iCenterX+1, m_iCenterY-offset);
+				DrawingDrawLine(m_iCenterX+1, m_iCenterY+offset, m_iCenterX+1, m_iCenterY+10+offset);
+			}
+
+			default:
+				break;
+		}
+	}
+
+	if(cvar.bone) {
+		float screen[2];
+		for(int i = 0; i < MAX_VPLAYERS; i++) {
+			for(int j = 0; j < vPlayers[i].numTargetSpots; j++) {
+				if(CalcScreen(vPlayers[i].TargetSpots[j], screen)) {
+					if(vPlayers[i].team == TEAM_TERROR) {
+						DrawingSetColor(255, 0, 0, 255);
+					}
+					else if(vPlayers[i].team == TEAM_CT) {
+						DrawingSetColor(0, 0, 255, 255);
+					}
+					DrawingDrawCircle(screen[0], screen[1], 2);
+				}
+			}
+		}
+	}
+}
+
+//=========================
 // HUD_Redraw
 // 
 // called every screen frame to
@@ -258,21 +327,17 @@ int HUD_Redraw( float time, int intermission )
 	int Result = gClientDll.HUD_Redraw(time, intermission);
 	updateLocalPlayer();
 
-	if(cvar.dlightfollow)
+	if(cvar.dlightfollow) {
 		playerLights();
-
-	if(cvar.crosshair == 1.0f) {
-		DrawingBegin();
-		DrawingSetColor(255, 0, 0, 255);
-
-		DrawingDrawLine(m_iCenterX-5, m_iCenterY+1, m_iCenterX+7, m_iCenterY+1);
-		DrawingDrawLine(m_iCenterX+1, m_iCenterY-5, m_iCenterX+1, m_iCenterY+7);
-
-		DrawingEnd();
 	}
 
-	CMenuDraw::Draw(gMenu, 100, 100);
+	DrawingBegin();
+	DrawingDraw();
+	DrawingEnd();
 
+	CMenuDraw::Draw(gMenu, 100, 100);
+	
+	vPlayers.ClearTargetSpots();
 	return Result;
 }
 
@@ -339,6 +404,7 @@ void HUD_PlayerMove( struct playermove_s *ppmove, int server )
 	me.viewAngles[0] = ppmove->angles[0];
 	me.viewAngles[1] = ppmove->angles[1];
 	me.viewAngles[2] = ppmove->angles[2];
+
 	return gClientDll.HUD_PlayerMove(ppmove, server);
 }
 
@@ -382,6 +448,50 @@ void IN_ClearStates (void)
 	return gClientDll.IN_ClearStates();
 }
 
+
+void FixupAngleDifference(usercmd_t *cmd, usercmd_t &OriginalCmd)
+{
+    // thanks tetsuo for this copy/paste
+    cl_entity_t *pLocal;
+    Vector viewforward, viewright, viewup, aimforward, aimright, aimup, vTemp;
+    float newforward, newright, newup, newmagnitude, fTime;
+    float forward = OriginalCmd.forwardmove;
+    float right = OriginalCmd.sidemove;
+    float up = OriginalCmd.upmove;
+
+    pLocal = gEngfuncs.GetLocalPlayer();
+    if(!pLocal)
+        return;
+
+// this branch makes sure your horizontal velocity is not affected when fixing up the movement angles -- it isn't specific to spinning and you can use it with the source tetsuo posted in his forum too
+if(pLocal->curstate.movetype == MOVETYPE_WALK)
+    {
+        gEngfuncs.pfnAngleVectors(Vector(0.0f, OriginalCmd.viewangles.y, 0.0f), viewforward, viewright, viewup);
+    }
+    else
+    {
+        gEngfuncs.pfnAngleVectors(OriginalCmd.viewangles, viewforward, viewright, viewup);
+    }
+
+// this branch makes sure your horizontal velocity is not affected when fixing up the movement angles -- it isn't specific to spinning and you can use it with the source tetsuo posted in his forum too
+    if(pLocal->curstate.movetype == MOVETYPE_WALK)
+    {
+        gEngfuncs.pfnAngleVectors(Vector(0.0f, cmd->viewangles.y, 0.0f), aimforward, aimright, aimup);
+    }
+    else
+    {
+        gEngfuncs.pfnAngleVectors(cmd->viewangles, aimforward, aimright, aimup);
+    }
+
+        newforward = DotProduct(forward * viewforward.Normalize(), aimforward) + DotProduct(right * viewright.Normalize(), aimforward) + DotProduct(up * viewup.Normalize(), aimforward);
+        newright = DotProduct(forward * viewforward.Normalize(), aimright) + DotProduct(right * viewright.Normalize(), aimright) + DotProduct(up * viewup.Normalize(), aimright);
+        newup = DotProduct(forward * viewforward.Normalize(), aimup) + DotProduct(right * viewright.Normalize(), aimup) + DotProduct(up * viewup.Normalize(), aimup);
+
+    cmd->forwardmove = newforward;
+    cmd->sidemove = newright;
+    cmd->upmove = newup;
+}  
+
 //===============
 // CL_CreateMove
 // 
@@ -393,11 +503,42 @@ void CL_CreateMove ( float frametime, struct usercmd_s *cmd, int active )
 {	
 	vec3_t outspread,outrecoil;
 	struct usercmd_s g_OriginalCmd;
+
 	gClientDll.CL_CreateMove(frametime, cmd, active);
+
+	me.frametime = frametime;
 
 	memcpy(&g_OriginalCmd,cmd,sizeof(usercmd_s));
 
-	if(cvar.norecoil && !IsCurWeaponSec())
+	//bunnyhop
+	if (cvar.bunnyhop && !( me.pmFlags & FL_ONGROUND ) && me.pmMoveType != 5 )
+	{
+		if ( cmd->buttons & IN_JUMP )
+			cmd->buttons &= ~IN_JUMP;
+	}
+	bool bAttacking = false;
+	if(GetCurWeapon()) {
+		bAttacking = cmd->buttons&IN_ATTACK && ((GetCurWeapon()->weapondata.m_flNextPrimaryAttack - cmd->msec / 1000) <= 0.0f);
+		if(cvar.autofire) {
+			if(bAttacking) {
+				cmd->buttons &= IN_ATTACK;
+			} else {
+				cmd->buttons &= ~IN_ATTACK;
+			}
+		}
+	}
+
+	//spin
+	if(!bAttacking && cvar.spinbot) {
+		//thx tabris
+		int iHasShiftHeld = GetAsyncKeyState(VK_LSHIFT);
+		if(me.pmMoveType == MOVETYPE_WALK && !iHasShiftHeld && !(cmd->buttons & IN_USE))
+		{
+			cmd->viewangles.y = fmod(gEngfuncs.GetClientTime() * 5.0f * 360.0f, 360.0f);
+		} 
+	}
+
+	if(cvar.norecoil)// && !IsCurWeaponSec())
 		ApplyNorecoil(frametime,me.punchangle,outrecoil);
 
 	if((cmd->buttons & IN_ATTACK && CanCurWeaponAttack() && cvar.nospread == 1.0f) || cvar.nospread == 2.0f)
@@ -410,6 +551,12 @@ void CL_CreateMove ( float frametime, struct usercmd_s *cmd, int active )
 
 	cmd->viewangles[0] += newangles[0];
 	cmd->viewangles[1] += newangles[1];
+
+	/*Fix walkvectors when doing spinbot and nospread/norecoil.
+	  Nospread on guns like AWP can affect the viewangles so much
+	  that when you walk forward it looks like you are drunk without
+	  this fix. */
+	FixupAngleDifference(cmd, g_OriginalCmd);
 }
 
 //==================

@@ -1,10 +1,20 @@
 #include <windows.h>
 #include "SDKInclude.h"
 #include "TransInclude.h"
+#include "client.h"
 
 // This pointer to CStudioModelRenderer class !
 StudioModelRenderer_d pThis;
 
+int GetPlayerByIndex(int eidx) {
+	for(int i = 0; i < MAX_VPLAYERS; i++) {
+		if(vPlayers[i].getEnt()->index == eidx) {
+			return i;
+		}
+	}
+
+	return -1;
+}
 //=========================
 // StudioDrawModel
 //=========================
@@ -153,6 +163,34 @@ void StudioCalcRotations( float pos[][3], vec4_t *q, mstudioseqdesc_t *pseqdesc,
 //=========================
 void StudioRenderModel ( void )
 {
+	int plindex;
+	cl_entity_t* p_anentity = NULL;
+
+	if(gStudio.GetCurrentEntity())
+		p_anentity = gStudio.GetCurrentEntity();
+	if(p_anentity)
+	if(p_anentity->player)
+	{
+		plindex = GetPlayerByIndex(p_anentity->index);
+		if(plindex != -1)
+		if(!vPlayers[plindex].gotbones) //gotbones is a bool which is reset for every player in every Draw() call
+		{
+			model_s* pModel = gStudio.SetupPlayerModel(plindex);
+			studiohdr_t* pStudioHeader = (studiohdr_t*)gStudio.Mod_Extradata( pModel );
+			typedef float TransformMatrix[ MAXSTUDIOBONES ][ 3 ][ 4 ];
+			TransformMatrix*  pbonetransform = (TransformMatrix*)gStudio.StudioGetBoneTransform();
+			int i = 0;
+			vPlayers[plindex].numTargetSpots = pStudioHeader->numbones;
+			for( i=0; i < pStudioHeader->numbones; i++ )
+			{
+				vPlayers[plindex].TargetSpots[i][ 0 ] = (*pbonetransform)[ i ][ 0 ][ 3 ];
+				vPlayers[plindex].TargetSpots[i][ 1 ] = (*pbonetransform)[ i ][ 1 ][ 3 ];
+				vPlayers[plindex].TargetSpots[i][ 2 ] = (*pbonetransform)[ i ][ 2 ][ 3 ];
+			
+			}
+			vPlayers[plindex].gotbones = true;
+		}
+	}
 	oStudioRenderModel();
 }
 

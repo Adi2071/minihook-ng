@@ -222,6 +222,9 @@ void cNoSpread::HUD_PostRunCmd(struct local_state_s *from, struct local_state_s 
 					DefaultSpreadVar(WeaponList[i].Id);
 					me.spread.recoiltime = time;
 					me.spread.firing = true;
+					if(cvar.zoomall && *pFOV != 90.0f) {
+						*pFOV = 90.0f;
+					}
 				}
 
 				WeaponList[i].CurWeapon = true;
@@ -252,6 +255,9 @@ void cNoSpread::HUD_PostRunCmd(struct local_state_s *from, struct local_state_s 
 			DefaultSpreadVar(Id);
 			me.spread.recoiltime = time;
 			me.spread.firing = false;
+			if(cvar.zoomall && *pFOV != 90.0f) {
+				*pFOV = 90.0f;
+			}
 		}
 	}
 }
