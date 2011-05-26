@@ -180,8 +180,8 @@ void StudioRenderModel ( void )
 			typedef float TransformMatrix[ MAXSTUDIOBONES ][ 3 ][ 4 ];
 			TransformMatrix*  pbonetransform = (TransformMatrix*)gStudio.StudioGetBoneTransform();
 			int i = 0;
-			vPlayers[plindex].numTargetSpots = pStudioHeader->numbones;
-			for( i=0; i < pStudioHeader->numbones; i++ )
+			vPlayers[plindex].numTargetSpots = 52;//pStudioHeader->numbones;
+			for( i=0; i < 52; i++ )
 			{
 				vPlayers[plindex].TargetSpots[i][ 0 ] = (*pbonetransform)[ i ][ 0 ][ 3 ];
 				vPlayers[plindex].TargetSpots[i][ 1 ] = (*pbonetransform)[ i ][ 1 ][ 3 ];

@@ -301,6 +301,7 @@ void DrawingDraw(void)
 	if(cvar.bone) {
 		float screen[2];
 		for(int i = 0; i < MAX_VPLAYERS; i++) {
+			int j = (int)cvar.bone;
 			for(int j = 0; j < vPlayers[i].numTargetSpots; j++) {
 				if(CalcScreen(vPlayers[i].TargetSpots[j], screen)) {
 					if(vPlayers[i].team == TEAM_TERROR) {
@@ -309,7 +310,7 @@ void DrawingDraw(void)
 					else if(vPlayers[i].team == TEAM_CT) {
 						DrawingSetColor(0, 0, 255, 255);
 					}
-					DrawingDrawCircle(screen[0], screen[1], 2);
+					DrawingDrawCircle(screen[0], screen[1], 1);
 				}
 			}
 		}
@@ -487,7 +488,12 @@ if(pLocal->curstate.movetype == MOVETYPE_WALK)
         newright = DotProduct(forward * viewforward.Normalize(), aimright) + DotProduct(right * viewright.Normalize(), aimright) + DotProduct(up * viewup.Normalize(), aimright);
         newup = DotProduct(forward * viewforward.Normalize(), aimup) + DotProduct(right * viewright.Normalize(), aimup) + DotProduct(up * viewup.Normalize(), aimup);
 
-    cmd->forwardmove = newforward;
+	if(cmd->viewangles.x > 89.0f || cmd->viewangles.x < -89.0f) {
+		cmd->forwardmove = -newforward;
+	}else {
+		cmd->forwardmove = newforward;
+	}
+    
     cmd->sidemove = newright;
     cmd->upmove = newup;
 }  
@@ -521,7 +527,7 @@ void CL_CreateMove ( float frametime, struct usercmd_s *cmd, int active )
 		bAttacking = cmd->buttons&IN_ATTACK && ((GetCurWeapon()->weapondata.m_flNextPrimaryAttack - cmd->msec / 1000) <= 0.0f);
 		if(cvar.autofire) {
 			if(bAttacking) {
-				cmd->buttons &= IN_ATTACK;
+				cmd->buttons |= IN_ATTACK;
 			} else {
 				cmd->buttons &= ~IN_ATTACK;
 			}
@@ -529,17 +535,18 @@ void CL_CreateMove ( float frametime, struct usercmd_s *cmd, int active )
 	}
 
 	//spin
-	if(!bAttacking && cvar.spinbot) {
+	if(!bAttacking && (cvar.spinbot != 0.0f) ) {
 		//thx tabris
 		int iHasShiftHeld = GetAsyncKeyState(VK_LSHIFT);
 		if(me.pmMoveType == MOVETYPE_WALK && !iHasShiftHeld && !(cmd->buttons & IN_USE))
 		{
-			cmd->viewangles.y = fmod(gEngfuncs.GetClientTime() * 5.0f * 360.0f, 360.0f);
+			cmd->viewangles.x = fmod(gEngfuncs.GetClientTime() * 1.0f * 360.0f, 360.0f) - 180.0f;
+			cmd->viewangles.y = fmod(gEngfuncs.GetClientTime() * 2.0f * 360.0f, 360.0f);
 		} 
 	}
 
 	if(cvar.norecoil)// && !IsCurWeaponSec())
-		ApplyNorecoil(frametime,me.punchangle,outrecoil);
+		ApplyNorecoil(me.punchangle,outrecoil);
 
 	if((cmd->buttons & IN_ATTACK && CanCurWeaponAttack() && cvar.nospread == 1.0f) || cvar.nospread == 2.0f)
 	{

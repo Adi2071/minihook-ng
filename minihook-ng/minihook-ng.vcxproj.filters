@@ -64,6 +64,9 @@
     <Filter Include="OpenGL">
       <UniqueIdentifier>{4c5a991a-1931-4ae3-bb06-03560381796b}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Aimbot">
+      <UniqueIdentifier>{1dccace2-f7b7-40cd-9cd8-19058ff04bc9}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="TransInclude.h">
@@ -591,6 +594,9 @@
     <ClInclude Include="MenuControl.h">
       <Filter>Menu</Filter>
     </ClInclude>
+    <ClInclude Include="Aimbot.h">
+      <Filter>Aimbot</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="StudioModelRenderer.cpp">
@@ -671,6 +677,9 @@
     </ClCompile>
     <ClCompile Include="MenuControl.cpp">
       <Filter>Menu</Filter>
+    </ClCompile>
+    <ClCompile Include="Aimbot.cpp">
+      <Filter>Aimbot</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

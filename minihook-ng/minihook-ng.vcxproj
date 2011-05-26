@@ -59,12 +59,14 @@
     </ClCompile>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="Aimbot.h" />
     <ClInclude Include="client.h" />
     <ClInclude Include="Commands.h" />
     <ClInclude Include="cvar.h" />
     <ClInclude Include="MenuControl.h" />
     <ClInclude Include="MenuDraw.h" />
     <ClInclude Include="MenuElem.h" />
+    <ClCompile Include="Aimbot.cpp" />
     <ClCompile Include="Commands.cpp" />
     <ClCompile Include="MenuControl.cpp" />
     <ClCompile Include="norecoil.cpp">
