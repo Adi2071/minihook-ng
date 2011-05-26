@@ -1,1 +1,1 @@
-void ApplyNorecoil(float frametime, float *punchangle, float *outAngles);
+void ApplyNorecoil(float *punchangle, float *outAngles);
