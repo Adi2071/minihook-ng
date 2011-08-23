@@ -3,9 +3,6 @@
 #include "TransInclude.h"
 #include "client.h"
 
-extern cvar_t* recoilVar1;
-extern cvar_t* recoilVar2;
-
 float GetRecoilVar() {
 	int iID = GetCurWeaponID();
 	float recoil = 0.0f;
@@ -51,7 +48,7 @@ float GetRecoilVar() {
 			recoil = 1.2f;
 			break;
 		case WEAPONLIST_TMP:
-			recoil = 0.8f;
+			recoil = 1.1f;
 			break;
 		case WEAPONLIST_MAC10:
 			recoil = 1.58f;

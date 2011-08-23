@@ -27,6 +27,7 @@ void oStudioPlayerBlend ( mstudioseqdesc_t *pseqdesc, int *pBlend, float *pPitch
 void oStudioEstimateGait ( entity_state_t *pplayer );
 void oStudioProcessGait ( entity_state_t *pplayer );
 
+bool StudioCheckBBox ( void );
 // Prototypes for patch gates
 void Init_Gate(void);
 void StudioDrawModel_Gate (void);
@@ -124,7 +125,7 @@ typedef struct StudioModelRenderer_s
 
 extern StudioModelRenderer_t gStudioModelRenderer;
 #define HookRendererFunction(name) *(DWORD*)&pStudioModelRenderer->##name = (DWORD)name##_Gate
-
+#define HookStudioFunction(name) *(DWORD*)&pStudio->##name = (DWORD)name
 
 
 #endif

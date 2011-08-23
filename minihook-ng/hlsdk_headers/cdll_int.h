@@ -254,6 +254,7 @@ typedef struct cl_enginefuncs_s
 	void						( *pfnSetMouseEnable )( qboolean fEnable );
 } cl_enginefunc_t;
 extern cl_enginefunc_t gEngfuncs;
+extern cl_enginefunc_t*pEngfuncs;
 
 #ifndef IN_BUTTONS_H
 #include "in_buttons.h"
