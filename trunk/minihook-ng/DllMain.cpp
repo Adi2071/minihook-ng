@@ -10,6 +10,7 @@
 #include "TransInclude.h"
 #include "util.h"
 #include "opengl.h"
+#include "HookPanel.h"
 
 // engine structure copies for global usage
 StudioModelRenderer_t	gStudioModelRenderer;
@@ -18,6 +19,7 @@ cl_enginefunc_t			gEngfuncs;
 engine_studio_api_t		gStudio;
 double*					pGlobalTime;
 float*					pFOV;
+HookPanel*				p_hkRootPanel;
 
 // engine structure pointers for hooking
 StudioModelRenderer_t*	pStudioModelRenderer;
@@ -25,6 +27,10 @@ ClientDll_t*			pClientDll;
 cl_enginefunc_t*		pEngfuncs;
 engine_studio_api_t*	pStudio;
 PVOID					pPreS_DynamicSound;
+vgui::Panel**			ppRootPanel;
+
+// detours
+Detour_c				*p_detFireBullets;
 
 // exception handlers
 HANDLE PreSHandler;
@@ -71,7 +77,7 @@ cvar_t* RegisterVariable ( char *szName, char *szValue, int flags )
 //===========================
 void HookEvent (char *szName, void ( *pfnEvent )( struct event_args_s *args ))
 {
-	#define HOOK_EVENT(n) if (!strcmp(Name, #n)) { p##n = pfnEvent; return gEngfuncs.pfnHookEvent(szName, h##n); }
+#define HOOK_EVENT(n) if (!strcmp(Name, #n)) { p##n = pfnEvent; return gEngfuncs.pfnHookEvent(szName, h##n); }
 
 	char Name[200];
 	strcpy(Name, szName+7);
@@ -124,6 +130,7 @@ void HookEvent (char *szName, void ( *pfnEvent )( struct event_args_s *args ))
 	HOOK_EVENT(createexplo);
 
 	/*// DOD
+	add_log("DOD:");
 	HOOK_EVENT(misc_train);
 	HOOK_EVENT(weapons_colt);
 	HOOK_EVENT(weapons_luger);
@@ -175,6 +182,7 @@ void HookEvent (char *szName, void ( *pfnEvent )( struct event_args_s *args ))
 	HOOK_EVENT(effects_mortarshell);
 
 	// Deathmatch Classic
+	add_log("Deathmatch:");
 	HOOK_EVENT(axe);
 	HOOK_EVENT(axeswing);
 	HOOK_EVENT(rocket);
@@ -193,6 +201,7 @@ void HookEvent (char *szName, void ( *pfnEvent )( struct event_args_s *args ))
 	HOOK_EVENT(door_doorhitbottom);
 
 	// Halflife
+	add_log("Halflife:");
 	HOOK_EVENT(mp52);
 	HOOK_EVENT(crowbar);
 	HOOK_EVENT(crossbow1);
@@ -205,6 +214,7 @@ void HookEvent (char *szName, void ( *pfnEvent )( struct event_args_s *args ))
 	HOOK_EVENT(snarkfire);
 
 	// Oposing force
+	add_log("Opposing Force:");
 	HOOK_EVENT(egon_effect);
 	HOOK_EVENT(eagle);
 	HOOK_EVENT(penguinfire);
@@ -215,6 +225,7 @@ void HookEvent (char *szName, void ( *pfnEvent )( struct event_args_s *args ))
 	HOOK_EVENT(displacer);
 
 	// Team fortress classic
+	add_log("TFC:");
 	HOOK_EVENT(wpn_tf_sniperhit);
 	HOOK_EVENT(wpn_tf_sg);
 	HOOK_EVENT(wpn_tf_sgreload);
@@ -438,14 +449,17 @@ void SetupHooks(void)
 	Sleep(3000);
 
 	// find structs and classes
+	DWORD ClientBase = gOffsets.ClientBase();
 	pStudioModelRenderer = (StudioModelRenderer_t*)gOffsets.StudioModelRenderer();//OffsetCStudioModelRenderer();
 	pClientDll = (ClientDll_t*)gOffsets.ClientFuncs();//OffsetExportTable();
 	pEngfuncs = (cl_enginefunc_t*)gOffsets.EngineFuncs();//OffsetEngineFunc();
 	pStudio = (engine_studio_api_t*)gOffsets.EngineStudio();//OffsetEngineStudio();
 	pGlobalTime = (double*)gOffsets.GlobalTime();
 	pFOV = (float*)gOffsets.FOV();
+	pEV_HLDM_FireBullets = (pfnFireBullets)gOffsets.FireBullets();
+	ppRootPanel = (vgui::Panel**)gOffsets.RootPanel();
 
-	if(!pStudioModelRenderer || !pClientDll || !pEngfuncs || !pStudio || !pGlobalTime || !pFOV)// || !pPreS_DynamicSound)
+	if(!pStudioModelRenderer || !pClientDll || !pEngfuncs || !pStudio || !pGlobalTime || !pFOV || !pEV_HLDM_FireBullets || !ppRootPanel)// || !pPreS_DynamicSound)
 		return;
 
 	add_log("pStudioModelRenderer: 0x%X", pStudioModelRenderer);
@@ -454,6 +468,11 @@ void SetupHooks(void)
 	add_log("pStudio: 0x%X", pStudio);
 	add_log("pGlobalTime: 0x%X", pGlobalTime);
 	add_log("pFOV: 0x%X", pFOV);
+	add_log("pEV_HLDM_FireBullets: 0x%x (client.dll + 0x%x)", pEV_HLDM_FireBullets, (DWORD)pEV_HLDM_FireBullets - ClientBase);
+
+	// hook EV_HLDM_FireBullets
+	p_detFireBullets = new Detour_c((DWORD)pEV_HLDM_FireBullets, (DWORD)hEV_HLDM_FireBullets);
+	pEV_HLDM_FireBullets = (pfnFireBullets)p_detFireBullets->SetupDetour();
 
 	// copy structs and classes
 	RtlCopyMemory(&gStudioModelRenderer, pStudioModelRenderer, sizeof(StudioModelRenderer_t));
@@ -484,22 +503,28 @@ void SetupHooks(void)
 	HookRendererFunction(StudioDrawPlayer);
 	VirtualProtect(pStudioModelRenderer, sizeof(StudioModelRenderer_t), dwOldProt, &dwOldProt);
 
+	HookStudioFunction(StudioCheckBBox);
+
 	// recall ClientDll & HUD initialization to hook events & usermsgs
 	pEngfuncs->pfnHookEvent = &HookEvent;
 	pEngfuncs->pfnHookUserMsg = &HookUserMsg;
 	pEngfuncs->pfnAddCommand = &AddCommand;
 	pEngfuncs->pfnRegisterVariable = &RegisterVariable;
 	
-	gClientDll.Initialize(pEngfuncs, CLDLL_INTERFACE_VERSION);
 	Initialize(pEngfuncs, CLDLL_INTERFACE_VERSION);
 	gClientDll.HUD_Init();
 
-	pEngfuncs->Con_Printf("minihook-ng loaded.");
+	while(!*ppRootPanel) Sleep(100);
+	p_hkRootPanel = new HookPanel(ppRootPanel);
 
 	pEngfuncs->pfnHookEvent = gEngfuncs.pfnHookEvent;
 	pEngfuncs->pfnHookUserMsg = gEngfuncs.pfnHookUserMsg;
 	pEngfuncs->pfnAddCommand = gEngfuncs.pfnAddCommand;
 	pEngfuncs->pfnRegisterVariable = gEngfuncs.pfnRegisterVariable;
+
+	pEngfuncs = &gEngfuncs;
+
+	
 }
 
 Detour_c *detGetProcAddress = NULL;
@@ -546,6 +571,7 @@ BOOL WINAPI DllMain(HINSTANCE hinstDLL, DWORD fdwReason, PVOID unused)
 
 	if(fdwReason == DLL_PROCESS_DETACH) {
 		delete detLoadLibrary;
+		delete p_detFireBullets;
 		deinit_log();
 	}
 

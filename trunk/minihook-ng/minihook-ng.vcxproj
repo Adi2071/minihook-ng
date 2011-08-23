@@ -21,7 +21,7 @@
     <WholeProgramOptimization>false</WholeProgramOptimization>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
-    <ConfigurationType>Application</ConfigurationType>
+    <ConfigurationType>DynamicLibrary</ConfigurationType>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
   <ImportGroup Label="ExtensionSettings">
@@ -39,6 +39,9 @@
     <IntDir Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(Configuration)\</IntDir>
     <OutDir Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(SolutionDir)$(Configuration)\</OutDir>
     <IntDir Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(Configuration)\</IntDir>
+    <IncludePath Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(ProjectDir)hlsdk_headers\vgui;$(IncludePath)</IncludePath>
+    <GenerateManifest Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">false</GenerateManifest>
+    <IncludePath Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(ProjectDir)hlsdk_headers\vgui;$(VCInstallDir)include;$(VCInstallDir)atlmfc\include;$(WindowsSdkDir)include;$(FrameworkSDKDir)\include;</IncludePath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <ClCompile>
@@ -46,28 +49,127 @@
       <RuntimeTypeInfo>false</RuntimeTypeInfo>
       <WarningLevel>TurnOffAllWarnings</WarningLevel>
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
+      <BrowseInformation>true</BrowseInformation>
+      <Optimization>MaxSpeed</Optimization>
+      <WholeProgramOptimization>false</WholeProgramOptimization>
+      <ExceptionHandling>Sync</ExceptionHandling>
+      <EnableEnhancedInstructionSet>StreamingSIMDExtensions2</EnableEnhancedInstructionSet>
+      <FloatingPointModel>Precise</FloatingPointModel>
+      <FavorSizeOrSpeed>Speed</FavorSizeOrSpeed>
+      <OmitFramePointers>true</OmitFramePointers>
     </ClCompile>
     <Link>
       <EntryPointSymbol>
       </EntryPointSymbol>
-      <AdditionalDependencies>kernel32.lib;user32.lib;winmm.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>kernel32.lib;user32.lib;winmm.lib;$(ProjectDir)\hlsdk_headers\vgui\vgui.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <LinkTimeCodeGeneration>Default</LinkTimeCodeGeneration>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
+      <BrowseInformation>true</BrowseInformation>
+      <Optimization>Disabled</Optimization>
+      <WarningLevel>TurnOffAllWarnings</WarningLevel>
     </ClCompile>
+    <Link>
+      <AdditionalDependencies>kernel32.lib;user32.lib;winmm.lib;$(ProjectDir)\hlsdk_headers\vgui\vgui.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <GenerateMapFile>true</GenerateMapFile>
+    </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="Aimbot.h" />
+    <ClInclude Include="BoneAimbot.h" />
     <ClInclude Include="client.h" />
     <ClInclude Include="Commands.h" />
     <ClInclude Include="cvar.h" />
+    <ClInclude Include="hlsdk_headers\vgui\VGUI.h" />
+    <ClInclude Include="hlsdk_headers\vgui\VGUI_ActionSignal.h" />
+    <ClInclude Include="hlsdk_headers\vgui\VGUI_App.h" />
+    <ClInclude Include="hlsdk_headers\vgui\VGUI_Bitmap.h" />
+    <ClInclude Include="hlsdk_headers\vgui\VGUI_BitmapTGA.h" />
+    <ClInclude Include="hlsdk_headers\vgui\VGUI_Border.h" />
+    <ClInclude Include="hlsdk_headers\vgui\VGUI_BorderLayout.h" />
+    <ClInclude Include="hlsdk_headers\vgui\VGUI_BorderPair.h" />
+    <ClInclude Include="hlsdk_headers\vgui\VGUI_BuildGroup.h" />
+    <ClInclude Include="hlsdk_headers\vgui\VGUI_Button.h" />
+    <ClInclude Include="hlsdk_headers\vgui\VGUI_ButtonController.h" />
+    <ClInclude Include="hlsdk_headers\vgui\VGUI_ButtonGroup.h" />
+    <ClInclude Include="hlsdk_headers\vgui\VGUI_ChangeSignal.h" />
+    <ClInclude Include="hlsdk_headers\vgui\VGUI_CheckButton.h" />
+    <ClInclude Include="hlsdk_headers\vgui\VGUI_Color.h" />
+    <ClInclude Include="hlsdk_headers\vgui\VGUI_ComboKey.h" />
+    <ClInclude Include="hlsdk_headers\vgui\VGUI_ConfigWizard.h" />
+    <ClInclude Include="hlsdk_headers\vgui\VGUI_Cursor.h" />
+    <ClInclude Include="hlsdk_headers\vgui\VGUI_Dar.h" />
+    <ClInclude Include="hlsdk_headers\vgui\VGUI_DataInputStream.h" />
+    <ClInclude Include="hlsdk_headers\vgui\VGUI_Desktop.h" />
+    <ClInclude Include="hlsdk_headers\vgui\VGUI_DesktopIcon.h" />
+    <ClInclude Include="hlsdk_headers\vgui\VGUI_EditPanel.h" />
+    <ClInclude Include="hlsdk_headers\vgui\VGUI_EtchedBorder.h" />
+    <ClInclude Include="hlsdk_headers\vgui\VGUI_FileInputStream.h" />
+    <ClInclude Include="hlsdk_headers\vgui\VGUI_FlowLayout.h" />
+    <ClInclude Include="hlsdk_headers\vgui\VGUI_FocusChangeSignal.h" />
+    <ClInclude Include="hlsdk_headers\vgui\VGUI_FocusNavGroup.h" />
+    <ClInclude Include="hlsdk_headers\vgui\VGUI_Font.h" />
+    <ClInclude Include="hlsdk_headers\vgui\VGUI_Frame.h" />
+    <ClInclude Include="hlsdk_headers\vgui\VGUI_FrameSignal.h" />
+    <ClInclude Include="hlsdk_headers\vgui\VGUI_GridLayout.h" />
+    <ClInclude Include="hlsdk_headers\vgui\VGUI_HeaderPanel.h" />
+    <ClInclude Include="hlsdk_headers\vgui\VGUI_Image.h" />
+    <ClInclude Include="hlsdk_headers\vgui\VGUI_ImagePanel.h" />
+    <ClInclude Include="hlsdk_headers\vgui\VGUI_InputSignal.h" />
+    <ClInclude Include="hlsdk_headers\vgui\VGUI_InputStream.h" />
+    <ClInclude Include="hlsdk_headers\vgui\VGUI_IntChangeSignal.h" />
+    <ClInclude Include="hlsdk_headers\vgui\VGUI_IntLabel.h" />
+    <ClInclude Include="hlsdk_headers\vgui\VGUI_KeyCode.h" />
+    <ClInclude Include="hlsdk_headers\vgui\VGUI_Label.h" />
+    <ClInclude Include="hlsdk_headers\vgui\VGUI_Layout.h" />
+    <ClInclude Include="hlsdk_headers\vgui\VGUI_LayoutInfo.h" />
+    <ClInclude Include="hlsdk_headers\vgui\VGUI_LineBorder.h" />
+    <ClInclude Include="hlsdk_headers\vgui\VGUI_ListPanel.h" />
+    <ClInclude Include="hlsdk_headers\vgui\VGUI_LoweredBorder.h" />
+    <ClInclude Include="hlsdk_headers\vgui\VGUI_Menu.h" />
+    <ClInclude Include="hlsdk_headers\vgui\VGUI_MenuItem.h" />
+    <ClInclude Include="hlsdk_headers\vgui\VGUI_MenuSeparator.h" />
+    <ClInclude Include="hlsdk_headers\vgui\VGUI_MessageBox.h" />
+    <ClInclude Include="hlsdk_headers\vgui\VGUI_MiniApp.h" />
+    <ClInclude Include="hlsdk_headers\vgui\VGUI_MouseCode.h" />
+    <ClInclude Include="hlsdk_headers\vgui\VGUI_Panel.h" />
+    <ClInclude Include="hlsdk_headers\vgui\VGUI_PopupMenu.h" />
+    <ClInclude Include="hlsdk_headers\vgui\VGUI_ProgressBar.h" />
+    <ClInclude Include="hlsdk_headers\vgui\VGUI_RadioButton.h" />
+    <ClInclude Include="hlsdk_headers\vgui\VGUI_RaisedBorder.h" />
+    <ClInclude Include="hlsdk_headers\vgui\VGUI_RepaintSignal.h" />
+    <ClInclude Include="hlsdk_headers\vgui\VGUI_Scheme.h" />
+    <ClInclude Include="hlsdk_headers\vgui\VGUI_ScrollBar.h" />
+    <ClInclude Include="hlsdk_headers\vgui\VGUI_ScrollPanel.h" />
+    <ClInclude Include="hlsdk_headers\vgui\VGUI_Slider.h" />
+    <ClInclude Include="hlsdk_headers\vgui\VGUI_StackLayout.h" />
+    <ClInclude Include="hlsdk_headers\vgui\VGUI_String.h" />
+    <ClInclude Include="hlsdk_headers\vgui\VGUI_Surface.h" />
+    <ClInclude Include="hlsdk_headers\vgui\VGUI_SurfaceBase.h" />
+    <ClInclude Include="hlsdk_headers\vgui\VGUI_SurfaceGL.h" />
+    <ClInclude Include="hlsdk_headers\vgui\VGUI_TablePanel.h" />
+    <ClInclude Include="hlsdk_headers\vgui\VGUI_TabPanel.h" />
+    <ClInclude Include="hlsdk_headers\vgui\VGUI_TaskBar.h" />
+    <ClInclude Include="hlsdk_headers\vgui\VGUI_TextEntry.h" />
+    <ClInclude Include="hlsdk_headers\vgui\VGUI_TextGrid.h" />
+    <ClInclude Include="hlsdk_headers\vgui\VGUI_TextImage.h" />
+    <ClInclude Include="hlsdk_headers\vgui\VGUI_TextPanel.h" />
+    <ClInclude Include="hlsdk_headers\vgui\VGUI_TickSignal.h" />
+    <ClInclude Include="hlsdk_headers\vgui\VGUI_ToggleButton.h" />
+    <ClInclude Include="hlsdk_headers\vgui\VGUI_TreeFolder.h" />
+    <ClInclude Include="hlsdk_headers\vgui\VGUI_WizardPanel.h" />
+    <ClInclude Include="HookPanel.h" />
     <ClInclude Include="MenuControl.h" />
     <ClInclude Include="MenuDraw.h" />
     <ClInclude Include="MenuElem.h" />
     <ClCompile Include="Aimbot.cpp" />
+    <ClCompile Include="BoneAimbot.cpp" />
     <ClCompile Include="Commands.cpp" />
+    <ClCompile Include="HookPanel.cpp" />
     <ClCompile Include="MenuControl.cpp" />
     <ClCompile Include="norecoil.cpp">
       <FileType>CppHeader</FileType>
@@ -75,9 +177,11 @@
     <ClInclude Include="norecoil.h" />
     <ClInclude Include="NoSpread.h" />
     <ClInclude Include="opengl.h" />
+    <ClInclude Include="perfectwall.h" />
     <ClInclude Include="playeritems.h" />
     <ClInclude Include="stdafx.h" />
     <ClInclude Include="stringfinder.h" />
+    <ClInclude Include="textures.h" />
     <ClInclude Include="timehandling.h" />
     <ClInclude Include="TransInclude.h" />
     <ClInclude Include="StudioModelRenderer.h" />
@@ -248,11 +352,13 @@
     <ClCompile Include="MenuElem.cpp" />
     <ClCompile Include="NoSpread.cpp" />
     <ClCompile Include="opengl.cpp" />
+    <ClCompile Include="perfectwall.cpp" />
     <ClCompile Include="playeritems.cpp" />
     <ClCompile Include="stringfinder.cpp" />
     <ClCompile Include="StudioModelRenderer.cpp" />
     <ClCompile Include="ClientDll.cpp" />
     <ClCompile Include="PreS_DynamicSound.cpp" />
+    <ClCompile Include="textures.cpp" />
     <ClCompile Include="timehandling.cpp" />
     <ClCompile Include="UserMsgs.cpp" />
     <ClCompile Include="Events.cpp" />

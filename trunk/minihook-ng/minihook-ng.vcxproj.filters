@@ -67,6 +67,9 @@
     <Filter Include="Aimbot">
       <UniqueIdentifier>{1dccace2-f7b7-40cd-9cd8-19058ff04bc9}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Engine Calls\VGUI">
+      <UniqueIdentifier>{16c3ac58-47d7-42d1-9bb6-e3ba264d3830}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="TransInclude.h">
@@ -597,6 +600,250 @@
     <ClInclude Include="Aimbot.h">
       <Filter>Aimbot</Filter>
     </ClInclude>
+    <ClInclude Include="textures.h">
+      <Filter>OGC Code</Filter>
+    </ClInclude>
+    <ClInclude Include="perfectwall.h">
+      <Filter>OGC Code</Filter>
+    </ClInclude>
+    <ClInclude Include="hlsdk_headers\vgui\VGUI.h">
+      <Filter>HLSDK Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="hlsdk_headers\vgui\VGUI_ActionSignal.h">
+      <Filter>HLSDK Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="hlsdk_headers\vgui\VGUI_App.h">
+      <Filter>HLSDK Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="hlsdk_headers\vgui\VGUI_Bitmap.h">
+      <Filter>HLSDK Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="hlsdk_headers\vgui\VGUI_BitmapTGA.h">
+      <Filter>HLSDK Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="hlsdk_headers\vgui\VGUI_Border.h">
+      <Filter>HLSDK Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="hlsdk_headers\vgui\VGUI_BorderLayout.h">
+      <Filter>HLSDK Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="hlsdk_headers\vgui\VGUI_BorderPair.h">
+      <Filter>HLSDK Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="hlsdk_headers\vgui\VGUI_BuildGroup.h">
+      <Filter>HLSDK Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="hlsdk_headers\vgui\VGUI_Button.h">
+      <Filter>HLSDK Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="hlsdk_headers\vgui\VGUI_ButtonController.h">
+      <Filter>HLSDK Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="hlsdk_headers\vgui\VGUI_ButtonGroup.h">
+      <Filter>HLSDK Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="hlsdk_headers\vgui\VGUI_ChangeSignal.h">
+      <Filter>HLSDK Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="hlsdk_headers\vgui\VGUI_CheckButton.h">
+      <Filter>HLSDK Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="hlsdk_headers\vgui\VGUI_Color.h">
+      <Filter>HLSDK Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="hlsdk_headers\vgui\VGUI_ComboKey.h">
+      <Filter>HLSDK Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="hlsdk_headers\vgui\VGUI_ConfigWizard.h">
+      <Filter>HLSDK Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="hlsdk_headers\vgui\VGUI_Cursor.h">
+      <Filter>HLSDK Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="hlsdk_headers\vgui\VGUI_Dar.h">
+      <Filter>HLSDK Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="hlsdk_headers\vgui\VGUI_DataInputStream.h">
+      <Filter>HLSDK Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="hlsdk_headers\vgui\VGUI_Desktop.h">
+      <Filter>HLSDK Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="hlsdk_headers\vgui\VGUI_DesktopIcon.h">
+      <Filter>HLSDK Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="hlsdk_headers\vgui\VGUI_EditPanel.h">
+      <Filter>HLSDK Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="hlsdk_headers\vgui\VGUI_EtchedBorder.h">
+      <Filter>HLSDK Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="hlsdk_headers\vgui\VGUI_FileInputStream.h">
+      <Filter>HLSDK Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="hlsdk_headers\vgui\VGUI_FlowLayout.h">
+      <Filter>HLSDK Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="hlsdk_headers\vgui\VGUI_FocusChangeSignal.h">
+      <Filter>HLSDK Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="hlsdk_headers\vgui\VGUI_FocusNavGroup.h">
+      <Filter>HLSDK Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="hlsdk_headers\vgui\VGUI_Font.h">
+      <Filter>HLSDK Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="hlsdk_headers\vgui\VGUI_Frame.h">
+      <Filter>HLSDK Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="hlsdk_headers\vgui\VGUI_FrameSignal.h">
+      <Filter>HLSDK Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="hlsdk_headers\vgui\VGUI_GridLayout.h">
+      <Filter>HLSDK Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="hlsdk_headers\vgui\VGUI_HeaderPanel.h">
+      <Filter>HLSDK Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="hlsdk_headers\vgui\VGUI_Image.h">
+      <Filter>HLSDK Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="hlsdk_headers\vgui\VGUI_ImagePanel.h">
+      <Filter>HLSDK Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="hlsdk_headers\vgui\VGUI_InputSignal.h">
+      <Filter>HLSDK Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="hlsdk_headers\vgui\VGUI_InputStream.h">
+      <Filter>HLSDK Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="hlsdk_headers\vgui\VGUI_IntChangeSignal.h">
+      <Filter>HLSDK Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="hlsdk_headers\vgui\VGUI_IntLabel.h">
+      <Filter>HLSDK Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="hlsdk_headers\vgui\VGUI_KeyCode.h">
+      <Filter>HLSDK Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="hlsdk_headers\vgui\VGUI_Label.h">
+      <Filter>HLSDK Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="hlsdk_headers\vgui\VGUI_Layout.h">
+      <Filter>HLSDK Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="hlsdk_headers\vgui\VGUI_LayoutInfo.h">
+      <Filter>HLSDK Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="hlsdk_headers\vgui\VGUI_LineBorder.h">
+      <Filter>HLSDK Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="hlsdk_headers\vgui\VGUI_ListPanel.h">
+      <Filter>HLSDK Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="hlsdk_headers\vgui\VGUI_LoweredBorder.h">
+      <Filter>HLSDK Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="hlsdk_headers\vgui\VGUI_Menu.h">
+      <Filter>HLSDK Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="hlsdk_headers\vgui\VGUI_MenuItem.h">
+      <Filter>HLSDK Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="hlsdk_headers\vgui\VGUI_MenuSeparator.h">
+      <Filter>HLSDK Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="hlsdk_headers\vgui\VGUI_MessageBox.h">
+      <Filter>HLSDK Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="hlsdk_headers\vgui\VGUI_MiniApp.h">
+      <Filter>HLSDK Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="hlsdk_headers\vgui\VGUI_MouseCode.h">
+      <Filter>HLSDK Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="hlsdk_headers\vgui\VGUI_Panel.h">
+      <Filter>HLSDK Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="hlsdk_headers\vgui\VGUI_PopupMenu.h">
+      <Filter>HLSDK Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="hlsdk_headers\vgui\VGUI_ProgressBar.h">
+      <Filter>HLSDK Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="hlsdk_headers\vgui\VGUI_RadioButton.h">
+      <Filter>HLSDK Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="hlsdk_headers\vgui\VGUI_RaisedBorder.h">
+      <Filter>HLSDK Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="hlsdk_headers\vgui\VGUI_RepaintSignal.h">
+      <Filter>HLSDK Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="hlsdk_headers\vgui\VGUI_Scheme.h">
+      <Filter>HLSDK Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="hlsdk_headers\vgui\VGUI_ScrollBar.h">
+      <Filter>HLSDK Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="hlsdk_headers\vgui\VGUI_ScrollPanel.h">
+      <Filter>HLSDK Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="hlsdk_headers\vgui\VGUI_Slider.h">
+      <Filter>HLSDK Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="hlsdk_headers\vgui\VGUI_StackLayout.h">
+      <Filter>HLSDK Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="hlsdk_headers\vgui\VGUI_String.h">
+      <Filter>HLSDK Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="hlsdk_headers\vgui\VGUI_Surface.h">
+      <Filter>HLSDK Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="hlsdk_headers\vgui\VGUI_SurfaceBase.h">
+      <Filter>HLSDK Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="hlsdk_headers\vgui\VGUI_SurfaceGL.h">
+      <Filter>HLSDK Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="hlsdk_headers\vgui\VGUI_TablePanel.h">
+      <Filter>HLSDK Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="hlsdk_headers\vgui\VGUI_TabPanel.h">
+      <Filter>HLSDK Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="hlsdk_headers\vgui\VGUI_TaskBar.h">
+      <Filter>HLSDK Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="hlsdk_headers\vgui\VGUI_TextEntry.h">
+      <Filter>HLSDK Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="hlsdk_headers\vgui\VGUI_TextGrid.h">
+      <Filter>HLSDK Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="hlsdk_headers\vgui\VGUI_TextImage.h">
+      <Filter>HLSDK Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="hlsdk_headers\vgui\VGUI_TextPanel.h">
+      <Filter>HLSDK Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="hlsdk_headers\vgui\VGUI_TickSignal.h">
+      <Filter>HLSDK Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="hlsdk_headers\vgui\VGUI_ToggleButton.h">
+      <Filter>HLSDK Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="hlsdk_headers\vgui\VGUI_TreeFolder.h">
+      <Filter>HLSDK Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="hlsdk_headers\vgui\VGUI_WizardPanel.h">
+      <Filter>HLSDK Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="HookPanel.h" />
+    <ClInclude Include="BoneAimbot.h">
+      <Filter>Aimbot</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="StudioModelRenderer.cpp">
@@ -681,5 +928,15 @@
     <ClCompile Include="Aimbot.cpp">
       <Filter>Aimbot</Filter>
     </ClCompile>
+    <ClCompile Include="textures.cpp">
+      <Filter>OGC Code</Filter>
+    </ClCompile>
+    <ClCompile Include="perfectwall.cpp">
+      <Filter>OGC Code</Filter>
+    </ClCompile>
+    <ClCompile Include="BoneAimbot.cpp">
+      <Filter>Aimbot</Filter>
+    </ClCompile>
+    <ClCompile Include="HookPanel.cpp" />
   </ItemGroup>
 </Project>

@@ -2,8 +2,15 @@
 #include "SDKInclude.h"
 #include "TransInclude.h"
 #include "client.h"
-float newangles[3]; //for nospread
 
+
+// All mods
+void hEV_HLDM_FireBullets (int idx, float *forward, float *right, float *up, int cShots, float *vecSrc, float *vecDirShooting, float flDistance, int iBulletType, int iTracerFreq, int *tracerCount, float flSpreadX, float flSpreadY)
+{
+	pEV_HLDM_FireBullets(idx, forward, right, up, cShots, vecSrc, vecDirShooting, flDistance, iBulletType, iTracerFreq, tracerCount, flSpreadX, flSpreadY);
+}
+
+pfnFireBullets pEV_HLDM_FireBullets;
 
 // Counterstrike
 void hglock1( struct event_args_s *args )
@@ -60,7 +67,7 @@ void husp( struct event_args_s *args )
 {
 	if (args->entindex == me.entindex)
 	{
-		VectorAdd(args->angles,newangles,args->angles);
+		VectorAdd(args->angles,me.spread.visangles,args->angles);
 	}
 	pusp(args);
 }
@@ -69,7 +76,7 @@ void hmp5n( struct event_args_s *args )
 {
 	if (args->entindex == me.entindex)
 	{
-		VectorAdd(args->angles,newangles,args->angles);
+		VectorAdd(args->angles,me.spread.visangles,args->angles);
 	}
 
 	pmp5n(args);
@@ -79,7 +86,7 @@ void hak47( struct event_args_s *args )
 {
 	if (args->entindex == me.entindex)
 	{
-		VectorAdd(args->angles,newangles,args->angles);
+		VectorAdd(args->angles,me.spread.visangles,args->angles);
 	}
 
 	pak47(args);
@@ -89,7 +96,7 @@ void haug( struct event_args_s *args )
 {
 	if (args->entindex == me.entindex)
 	{
-		VectorAdd(args->angles,newangles,args->angles);
+		VectorAdd(args->angles,me.spread.visangles,args->angles);
 	}
 
 	paug(args);
@@ -99,7 +106,7 @@ void hdeagle( struct event_args_s *args )
 {
 	if (args->entindex == me.entindex)
 	{
-		VectorAdd(args->angles,newangles,args->angles);
+		VectorAdd(args->angles,me.spread.visangles,args->angles);
 	}
 
 	pdeagle(args);
@@ -109,7 +116,7 @@ void hg3sg1( struct event_args_s *args )
 {
 	if (args->entindex == me.entindex)
 	{
-		VectorAdd(args->angles,newangles,args->angles);
+		VectorAdd(args->angles,me.spread.visangles,args->angles);
 	}
 
 	pg3sg1(args);
@@ -119,7 +126,7 @@ void hsg550( struct event_args_s *args )
 {
 	if (args->entindex == me.entindex)
 	{
-		VectorAdd(args->angles,newangles,args->angles);
+		VectorAdd(args->angles,me.spread.visangles,args->angles);
 	}
 
 	psg550(args);
@@ -127,11 +134,12 @@ void hsg550( struct event_args_s *args )
 
 void hglock18( struct event_args_s *args )
 {
-	if (args->entindex == me.entindex)
-	{
-		VectorAdd(args->angles,newangles,args->angles);
-	}
 
+	if ( (args->entindex == me.entindex) && (me.spread.WeaponState & GLOCK18_BURST) )
+	{
+		me.spread.burst++;
+		VectorAdd(args->angles,me.spread.visangles,args->angles);
+	}
 	pglock18(args);
 }
 
@@ -139,7 +147,7 @@ void hm249( struct event_args_s *args )
 {
 	if (args->entindex == me.entindex)
 	{
-		VectorAdd(args->angles,newangles,args->angles);
+		VectorAdd(args->angles,me.spread.visangles,args->angles);
 	}
 
 	pm249(args);
@@ -149,7 +157,7 @@ void hm3( struct event_args_s *args )
 {
 	if (args->entindex == me.entindex)
 	{
-		VectorAdd(args->angles,newangles,args->angles);
+		VectorAdd(args->angles,me.spread.visangles,args->angles);
 	}
 
 	pm3(args);
@@ -159,7 +167,7 @@ void hm4a1( struct event_args_s *args )
 {
 	if (args->entindex == me.entindex)
 	{
-		VectorAdd(args->angles,newangles,args->angles);
+		VectorAdd(args->angles,me.spread.visangles,args->angles);
 	}
 
 	pm4a1(args);
@@ -169,7 +177,7 @@ void hmac10( struct event_args_s *args )
 {
 	if (args->entindex == me.entindex)
 	{
-		VectorAdd(args->angles,newangles,args->angles);
+		VectorAdd(args->angles,me.spread.visangles,args->angles);
 	}
 
 	pmac10(args);
@@ -179,7 +187,7 @@ void hp90( struct event_args_s *args )
 {
 	if (args->entindex == me.entindex)
 	{
-		VectorAdd(args->angles,newangles,args->angles);
+		VectorAdd(args->angles,me.spread.visangles,args->angles);
 	}
 
 	pp90(args);
@@ -189,7 +197,7 @@ void hp228( struct event_args_s *args )
 {
 	if (args->entindex == me.entindex)
 	{
-		VectorAdd(args->angles,newangles,args->angles);
+		VectorAdd(args->angles,me.spread.visangles,args->angles);
 	}
 
 	pp228(args);
@@ -199,7 +207,7 @@ void hawp( struct event_args_s *args )
 {
 	if (args->entindex == me.entindex)
 	{
-		VectorAdd(args->angles,newangles,args->angles);
+		VectorAdd(args->angles,me.spread.visangles,args->angles);
 	}
 
 	pawp(args);
@@ -209,7 +217,7 @@ void hscout( struct event_args_s *args )
 {
 	if (args->entindex == me.entindex)
 	{
-		VectorAdd(args->angles,newangles,args->angles);
+		VectorAdd(args->angles,me.spread.visangles,args->angles);
 	}
 
 	pscout(args);
@@ -219,7 +227,7 @@ void hsg552( struct event_args_s *args )
 {
 	if (args->entindex == me.entindex)
 	{
-		VectorAdd(args->angles,newangles,args->angles);
+		VectorAdd(args->angles,me.spread.visangles,args->angles);
 	}
 
 	psg552(args);
@@ -229,7 +237,7 @@ void htmp( struct event_args_s *args )
 {
 	if (args->entindex == me.entindex)
 	{
-		VectorAdd(args->angles,newangles,args->angles);
+		VectorAdd(args->angles,me.spread.visangles,args->angles);
 	}
 
 	ptmp(args);
@@ -239,7 +247,7 @@ void hfiveseven( struct event_args_s *args )
 {
 	if (args->entindex == me.entindex)
 	{
-		VectorAdd(args->angles,newangles,args->angles);
+		VectorAdd(args->angles,me.spread.visangles,args->angles);
 	}
 
 	pfiveseven(args);
@@ -249,7 +257,7 @@ void hump45( struct event_args_s *args )
 {
 	if (args->entindex == me.entindex)
 	{
-		VectorAdd(args->angles,newangles,args->angles);
+		VectorAdd(args->angles,me.spread.visangles,args->angles);
 	}
 
 	pump45(args);
@@ -259,7 +267,7 @@ void hxm1014( struct event_args_s *args )
 {
 	if (args->entindex == me.entindex)
 	{
-		VectorAdd(args->angles,newangles,args->angles);
+		VectorAdd(args->angles,me.spread.visangles,args->angles);
 	}
 
 	pxm1014(args);
@@ -269,7 +277,7 @@ void helite_left( struct event_args_s *args )
 {
 	if (args->entindex == me.entindex)
 	{
-		VectorAdd(args->angles,newangles,args->angles);
+		VectorAdd(args->angles,me.spread.visangles,args->angles);
 	}
 
 	pelite_left(args);
@@ -279,7 +287,7 @@ void helite_right( struct event_args_s *args )
 {
 	if (args->entindex == me.entindex)
 	{
-		VectorAdd(args->angles,newangles,args->angles);
+		VectorAdd(args->angles,me.spread.visangles,args->angles);
 	}
 
 	pelite_right(args);
@@ -295,7 +303,7 @@ void hgalil( struct event_args_s *args )
 {
 	if (args->entindex == me.entindex)
 	{
-		VectorAdd(args->angles,newangles,args->angles);
+		VectorAdd(args->angles,me.spread.visangles,args->angles);
 	}
 
 	pgalil(args);
@@ -305,7 +313,7 @@ void hfamas( struct event_args_s *args )
 {
 	if (args->entindex == me.entindex)
 	{
-		VectorAdd(args->angles,newangles,args->angles);
+		VectorAdd(args->angles,me.spread.visangles,args->angles);
 	}
 
 	pfamas(args);

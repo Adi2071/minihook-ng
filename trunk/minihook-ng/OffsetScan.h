@@ -19,6 +19,9 @@ public:
 	void *PlayerMove(void);
 	void *RefParams(void);
 	void *StudioModelRenderer(void);
+	void *FireBullets(void);
+	void **RootPanel(void);
+	DWORD ClientBase(void);
 };
 
 extern COffsets gOffsets;

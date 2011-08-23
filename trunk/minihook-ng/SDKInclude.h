@@ -1,3 +1,5 @@
+#pragma once
+
 #include "hlsdk_headers/wrect.h"
 #include "hlsdk_headers/cl_dll.h"
 #include "hlsdk_headers/cdll_int.h"

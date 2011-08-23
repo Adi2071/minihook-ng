@@ -5,6 +5,7 @@
 #include <windows.h>
 #include <string>
 #include <vector>
+#include <algorithm>
 #undef NDEBUG
 #include <assert.h>
 #include "cvar.h"
@@ -60,15 +61,21 @@ typedef struct
 	float gtime;
 	float prevtime;
 	float brokentime; // This is only supposed to be set to zero when you buy the sg550 or the g3sg1
-	// not when you reload, switch weapons or pick up a weapon, this is do to the
+	// not when you reload, switch weapons or pick up a weapon, this is due to the
 	// cs bugs for these guns (valve fix your code please)
 	float spreadvar;
 	float lastSG550SpreadVar;
 	float recoiltime;
 	bool firing;
 	int WeaponState;
+	// glock burst counter
+	int burst;
+	// no visual spread angles
+	float visangles[3];
+	
 }spread_info;
 
+class Weapon_List;
 struct local_player_info
 {
 	local_player_info():team(0),iClip(0),iFOV(0)
@@ -79,6 +86,7 @@ struct local_player_info
 	int team;
 	//struct cl_entity_s *ent;
 	int iWeapon;
+	Weapon_List* weapon;
 	int iClip;
 	int iFOV;  // holds the current FOV in CS, not the one which OGC has set.
 	bool inZoomMode;
@@ -93,6 +101,7 @@ struct local_player_info
 	float viewAngles[3];
 
 	float frametime;
+	float strafeAngle;
 
 	int entindex;
 	//int kills;  // already found in playerinfo
@@ -107,6 +116,42 @@ extern local_player_info me;
 
 
 //================================================================
+enum PlayerBones
+{
+	//Middle
+	BONE_HEAD = 8,
+	BONE_NECK = 7,
+	BONE_LOWERNECK = 6,
+	BONE_UPPERTORSO = 5,
+	BONE_MIDTORSO = 4,
+	BONE_LOWERTORSO = 3,
+
+	//Left
+	BONE_LEFTCOLLAR = 9,
+	BONE_LEFTSHOULDER = 10,
+	BONE_LEFTELBOW = 11,
+	BONE_LEFTWRIST = 12,
+	BONE_LEFTFOREARM = 19,
+	BONE_LEFTARM = 21,
+	BONE_LEFTPELVIS = 41,
+	BONE_LEFTKNEE = 43,
+	BONE_LEFTANKLE = 44,
+
+	//Right
+	BONE_RIGHTCOLLAR = 24,
+	BONE_RIGHTSHOULDER = 25,
+	BONE_RIGHTELBOW = 26,
+	BONE_RIGHTWRIST = 27,
+	BONE_RIGHTFOREARM = 34,
+	BONE_RIGHTARM = 36,
+	BONE_RIGHTPELVIS = 40,
+	BONE_RIGHTKNEE = 49,
+	BONE_RIGHTANKLE = 50,
+
+	// used to signify invalid bone
+	// or end of a list of bones
+	BONE_INVALID = -1
+};
 enum    { MAX_TARGET_SPOTS=55 };
 class PlayerInfo 
 {
@@ -179,6 +224,7 @@ public:
 	bool isAlive () { return  alive; }
 
 	struct cl_entity_s * getEnt() { return gEngfuncs.GetEntityByIndex(entindex); }
+	int getEntIndex() { return entindex; }
 
 	// position update reporting
 	void   updateClear    ()
@@ -215,7 +261,7 @@ public:
 	int    updateType()          { return m_lastUpdateType; }
 	vec3_t  origin()       { return m_origin; }
 	float  timeSinceLastUpdate() { return (float)(ClientTime::current-m_lastUpdateTime); }
-	
+	bool   fresh		   ()    { return isUpdated() && (timeSinceLastUpdate()<me.frametime); }
 
 	// weapon update:
 	const char* getWeapon() { return m_weapon; }
@@ -259,5 +305,58 @@ public:
 	}
 };
 extern VecPlayers vPlayers;
+
+enum{ BAD_TARGET =-1 };
+class VecTargets
+{
+private:
+	int* targets;
+	int nTargets;
+	static bool sortplayer(int a, int b)
+	{
+		return (vPlayers[a].distance < vPlayers[b].distance);
+	}
+public:
+	~VecTargets() { delete[] targets; }
+	VecTargets() 
+	{ 
+		targets = new int[MAX_VPLAYERS+1];
+		for(int i=0;i<MAX_VPLAYERS;i++) { targets[i] = -1; nTargets = 0; }
+	}
+
+	void SortTargets(void)
+	{
+		nTargets = 0;
+		if(!me.alive)
+		{
+			targets[nTargets] = BAD_TARGET;
+			return;
+		}
+
+		for(int i = 0; i < MAX_VPLAYERS; i++)
+		{
+			PlayerInfo& tmpPlayer = vPlayers[i];
+			if(tmpPlayer.isAlive() && tmpPlayer.fresh() && (tmpPlayer.team != me.team))
+			{
+				targets[nTargets] = i;
+				nTargets++;
+			}
+		}
+		targets[nTargets] = BAD_TARGET;
+		std::sort(targets, targets+nTargets, sortplayer);
+	}
+
+	inline int operator [] (unsigned int i)
+	{
+		if(i>=MAX_VPLAYERS) {return targets[0];}
+		else				{return targets[i];}
+	}
+	
+	inline unsigned int size() { 
+		return nTargets;
+	}
+};
+extern VecTargets vTargets;
+
 extern float newangles[3];
 #endif

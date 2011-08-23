@@ -14,14 +14,20 @@
 #include "client.h"
 #include "NoSpread.h"
 #include "norecoil.h"
+#include "textures.h"
+#include "perfectwall.h"
+#include "BoneAimbot.h"
+
+#include "HookPanel.h"
+extern HookPanel* p_hkRootPanel;
 
 using namespace std;
 
 local_player_info me;
 VecPlayers vPlayers;
+VecTargets vTargets;
 
-cvar_t* recoilVar1 = NULL;
-cvar_t* recoilVar2 = NULL;
+CMenuElem gDebug("DEBUG", ELEM_BASEMENU, NULL);
 
 //========================================================================================
 static bool isFakePlayer(int ax, cl_entity_s* ent);
@@ -30,6 +36,7 @@ static inline float GetDistanceFrom(const float* pos);
 //========================================================================================
 static void playerCalcExtraData(int ax, cl_entity_s* ent);
 //========================================================================================
+
 bool bIsEntValid(cl_entity_s * ent)
 {
 	cl_entity_s* localEnt = gEngfuncs.GetLocalPlayer();
@@ -37,6 +44,26 @@ bool bIsEntValid(cl_entity_s * ent)
 	if(ent && ent != localEnt && !(ent->curstate.effects & EF_NODRAW) && ent->player && !ent->curstate.spectator 
 		&& ent->curstate.solid && !(ent->curstate.messagenum < localEnt->curstate.messagenum))
 		return true;
+
+	return false;
+}
+
+bool ValidTarget(cl_entity_s* ent)
+{
+	int nPlayers = vPlayers.size();
+	if(!bIsEntValid(ent)) { return false; }
+
+	int entindex = ent->index;
+
+	for(int px = 0; px < nPlayers; px++)
+	{
+		PlayerInfo& pi = vPlayers[px];
+
+		if( (pi.getEnt() == ent) && (pi.team != me.team) )
+		{
+			return true;
+		}
+	}
 
 	return false;
 }
@@ -56,7 +83,7 @@ void updateLocalPlayer()
 static bool isFakePlayer(int ax, cl_entity_s* ent)
 {
 	register PlayerInfo& r = vPlayers[ax];
-	
+
 	if( ent->curstate.effects&EF_NODRAW ) { return true; }
 	if( ax==me.entindex )                 { return true; }
 	switch(ent->curstate.rendermode)
@@ -105,7 +132,7 @@ static void playerCalcExtraData(int ax, cl_entity_s* ent)
 		{
 			char tmp[32];
 			char szName[120];
-			
+
 			strcpy(szName,mdl->name);
 
 			int len = strlen(szName);
@@ -133,40 +160,6 @@ static void playerCalcExtraData(int ax, cl_entity_s* ent)
 	r.distance  = GetDistanceFrom (r.origin()); if(r.distance<1) r.distance=1; // avoid division by zero
 }
 
-void playerLights()
-{
-	for (int ax=0;ax<vPlayers.size();ax++)
-	{
-		cl_entity_t	*mee		= gEngfuncs.GetLocalPlayer();
-        cl_entity_t *ent	= gEngfuncs.GetEntityByIndex(ax);
-		dlight_t	*dl		= gEngfuncs.pEfxAPI->CL_AllocDlight(0);
-
-		int px = ax;
-
-		if(vPlayers[px].isAlive() && vPlayers[px].isUpdated())//if the player is alive
-		{
-			if(mee->index == ent->index) //Check if the player is you
-			{continue;} //if it is, continue without drawing the light.
-			
-			if(vPlayers[px].team==1)//if the player is in team 1 (T)
-			{
-				dl->color.r = 255; //assign these colors
-				dl->color.g = 50;
-				dl->color.b = 50;
-			}
-			if(vPlayers[px].team==2)//if the player is on team2 (CT)
-			{
-				dl->color.r = 50; //assign these colors
-				dl->color.g = 50;
-				dl->color.b = 255;
-			}
-			
-			dl->origin	=	vPlayers[px].origin(); // this is the origin (location of the players)
-			dl->radius	=	200; //radius of the light
-			dl->die		=	gEngfuncs.GetClientTime() + 0.2; //after how long the light gets killed.
-		}
-	}
-}
 
 //========================= 
 // Initialize
@@ -175,6 +168,12 @@ void playerLights()
 //=========================
 int Initialize( cl_enginefunc_t *pEnginefuncs, int iVersion )
 {
+	int retval = gClientDll.Initialize(pEnginefuncs, iVersion);
+	if(!retval)
+	{
+		return retval;
+	}
+
 	SCREENINFO si;
 	si.iSize = sizeof(SCREENINFO);
 	gEngfuncs.pfnGetScreenInfo(&si);
@@ -185,15 +184,19 @@ int Initialize( cl_enginefunc_t *pEnginefuncs, int iVersion )
 	//Visuals menu-------------------------------
 	CMenuElem crosshair("Crosshair", ELEM_VALUE, &cvar.crosshair);
 	crosshair.SetMaximumValue(2.0f);
-	CMenuElem dlightFollow("PlayerLights", ELEM_VALUE, &cvar.dlightfollow);
-	CMenuElem showBone("Show Bones", ELEM_VALUE, &cvar.bone);
+	CMenuElem meLight("Light (me)", ELEM_VALUE, &cvar.light);
+	CMenuElem targetLight("Targetlight (aimbot)", ELEM_VALUE, &cvar.tlight);
+	CMenuElem showBone("Skeleton", ELEM_VALUE, &cvar.bone);
+	CMenuElem zoomAll("Zoom with all weapons", ELEM_VALUE, &cvar.zoomall);
 
 
 	CMenuElem visualsMenu("Visuals", ELEM_SUBMENU, NULL);
 	visualsMenu.AddElement(crosshair);
-	visualsMenu.AddElement(dlightFollow);
+	visualsMenu.AddElement(meLight);
+	visualsMenu.AddElement(targetLight);
 	visualsMenu.AddElement(showBone);
-	
+	visualsMenu.AddElement(zoomAll);
+
 
 	//Spread menu-------------------------------
 	CMenuElem noSpread("NoSpread", ELEM_VALUE, &cvar.nospread);
@@ -208,18 +211,24 @@ int Initialize( cl_enginefunc_t *pEnginefuncs, int iVersion )
 	spreadMenu.AddElement(noVisRecoil);
 
 	//Weapons menu
-	CMenuElem zoomAll("Zoom All Weapons", ELEM_VALUE, &cvar.zoomall);
-	CMenuElem autoFire("Autofire", ELEM_VALUE, &cvar.autofire);
+	CMenuElem autoAim("Autoaim", ELEM_VALUE, &cvar.aim);
+	CMenuElem aimPred("Aim prediction", ELEM_VALUE, &cvar.predahead);
+	aimPred.SetMaximumValue(100.0f);
+	CMenuElem autoFire("Autofire (rapid pistol)", ELEM_VALUE, &cvar.autofire);
+	CMenuElem triggerBot("Triggerbot", ELEM_VALUE, &cvar.triggerbot);
+	triggerBot.SetMaximumValue(2.0f);
 
-	CMenuElem weaponsMenu("Weapon Stuff", ELEM_SUBMENU, NULL);
-	weaponsMenu.AddElement(zoomAll);
+	CMenuElem weaponsMenu("Weapon Options", ELEM_SUBMENU, NULL);
+	weaponsMenu.AddElement(autoAim);
+	weaponsMenu.AddElement(aimPred);
 	weaponsMenu.AddElement(autoFire);
+	weaponsMenu.AddElement(triggerBot);
 
 	//Others menu
 	CMenuElem bunnyHop("Bunny Hop", ELEM_VALUE, &cvar.bunnyhop);
 	CMenuElem spinBot("Spin Bot", ELEM_VALUE, &cvar.spinbot);
 
-	CMenuElem othersMenu("Others", ELEM_SUBMENU, NULL);
+	CMenuElem othersMenu("Fun Shit", ELEM_SUBMENU, NULL);
 	othersMenu.AddElement(bunnyHop);
 	othersMenu.AddElement(spinBot);
 
@@ -230,11 +239,14 @@ int Initialize( cl_enginefunc_t *pEnginefuncs, int iVersion )
 	gMenu.AddElement(weaponsMenu);
 	gMenu.AddElement(othersMenu);
 
-	//Cvars-------------------------------
-	recoilVar1 = gEngfuncs.pfnRegisterVariable("mini_recoilvar1", "20", FCVAR_SERVER);
-	recoilVar2 = gEngfuncs.pfnRegisterVariable("mini_recoilvar2", "-35", FCVAR_SERVER);
+	//Debug Menu
+	CMenuElem aimTarget("gAimbot.target", ELEM_VALUE, &dvar.aimtarget);
 
-	return gClientDll.Initialize(pEnginefuncs, iVersion);
+	gDebug.Initialize();
+	gDebug.AddElement(aimTarget);
+
+	pEngfuncs->Con_Printf("minihook-ng loaded.\n");
+	return retval;
 }
 
 //=========================
@@ -246,7 +258,6 @@ int Initialize( cl_enginefunc_t *pEnginefuncs, int iVersion )
 //=========================
 void HUD_Init( void )
 {
-
 	return gClientDll.HUD_Init();
 }
 
@@ -271,33 +282,6 @@ int HUD_VidInit( void )
 //==========================
 void DrawingDraw(void)
 {
-	if(cvar.crosshair) {
-		int velfactor = (int)VectorLength(me.pmVelocity)/50.0f;
-		int recfactor = me.spread.recoil;
-		if(recfactor > 10)
-			recfactor = 10;
-		int offset = velfactor + recfactor;
-
-		DrawingSetColor(255, 0, 0, 255);
-		switch((int)cvar.crosshair) {
-			case 1: {
-				DrawingDrawLine(m_iCenterX-9, m_iCenterY+1, m_iCenterX+10, m_iCenterY+1);
-				DrawingDrawLine(m_iCenterX+1, m_iCenterY-10, m_iCenterX+1, m_iCenterY+10);
-				break;
-			}
-
-			case 2: {
-				DrawingDrawLine(m_iCenterX-9-offset, m_iCenterY+1, m_iCenterX-offset, m_iCenterY+1);
-				DrawingDrawLine(m_iCenterX+offset, m_iCenterY+1, m_iCenterX+9+offset, m_iCenterY+1);
-				DrawingDrawLine(m_iCenterX+1, m_iCenterY-10-offset, m_iCenterX+1, m_iCenterY-offset);
-				DrawingDrawLine(m_iCenterX+1, m_iCenterY+offset, m_iCenterX+1, m_iCenterY+10+offset);
-			}
-
-			default:
-				break;
-		}
-	}
-
 	if(cvar.bone) {
 		float screen[2];
 		for(int i = 0; i < MAX_VPLAYERS; i++) {
@@ -310,9 +294,44 @@ void DrawingDraw(void)
 					else if(vPlayers[i].team == TEAM_CT) {
 						DrawingSetColor(0, 0, 255, 255);
 					}
-					DrawingDrawCircle(screen[0], screen[1], 1);
+					if(j == BONE_HEAD)
+					{
+						DrawingSetColor(0, 255, 0, 255);
+						DrawingDrawCircle(screen[0], screen[1], 2);
+					}
+					else
+					{
+						DrawingDrawCircle(screen[0], screen[1], 1);
+					}
 				}
 			}
+		}
+	}
+
+	if(cvar.crosshair) {
+		int velfactor = (int)VectorLength(me.pmVelocity)/50.0f;
+		int recfactor = me.spread.recoil;
+		if(recfactor > 10)
+			recfactor = 10;
+		int offset = velfactor + recfactor;
+
+		DrawingSetColor(255, 0, 0, 255);
+		switch((int)cvar.crosshair) {
+		case 1: {
+			DrawingDrawLine(m_iCenterX-9, m_iCenterY+1, m_iCenterX+10, m_iCenterY+1);
+			DrawingDrawLine(m_iCenterX+1, m_iCenterY-10, m_iCenterX+1, m_iCenterY+10);
+			break;
+				}
+
+		case 2: {
+			DrawingDrawLine(m_iCenterX-9-offset, m_iCenterY+1, m_iCenterX-offset, m_iCenterY+1);
+			DrawingDrawLine(m_iCenterX+offset, m_iCenterY+1, m_iCenterX+9+offset, m_iCenterY+1);
+			DrawingDrawLine(m_iCenterX+1, m_iCenterY-10-offset, m_iCenterX+1, m_iCenterY-offset);
+			DrawingDrawLine(m_iCenterX+1, m_iCenterY+offset, m_iCenterX+1, m_iCenterY+10+offset);
+				}
+
+		default:
+			break;
 		}
 	}
 }
@@ -328,8 +347,14 @@ int HUD_Redraw( float time, int intermission )
 	int Result = gClientDll.HUD_Redraw(time, intermission);
 	updateLocalPlayer();
 
-	if(cvar.dlightfollow) {
-		playerLights();
+	if(cvar.aim && me.alive)
+	{
+		gAimbot.FindTarget();
+		dvar.aimtarget = gAimbot.target;
+		if(gAimbot.target != BAD_TARGET)
+		{
+			gEngfuncs.SetViewAngles(gAimbot.targetAngles);
+		}
 	}
 
 	DrawingBegin();
@@ -337,7 +362,8 @@ int HUD_Redraw( float time, int intermission )
 	DrawingEnd();
 
 	CMenuDraw::Draw(gMenu, 100, 100);
-	
+	CMenuDraw::Draw(gDebug, 400, 100);
+
 	vPlayers.ClearTargetSpots();
 	return Result;
 }
@@ -375,6 +401,7 @@ void HUD_Reset( void )
 //==========
 void HUD_PlayerMoveInit( struct playermove_s *ppmove )
 {
+	InitTextureTypes(ppmove);
 	return gClientDll.HUD_PlayerMoveInit(ppmove);
 }
 
@@ -393,12 +420,12 @@ void HUD_PlayerMove( struct playermove_s *ppmove, int server )
 {
 	me.pmFlags = ppmove->flags;
 	me.pmMoveType = ppmove->movetype;
-    VectorCopy(ppmove->velocity,me.pmVelocity);
-		
+	VectorCopy(ppmove->velocity,me.pmVelocity);
+
 	// copy origin+angles
 	gEngfuncs.pEventAPI->EV_LocalPlayerViewheight(me.pmEyePos);
 
-    me.pmEyePos[0] += ppmove->origin[0];
+	me.pmEyePos[0] += ppmove->origin[0];
 	me.pmEyePos[1] += ppmove->origin[1];
 	me.pmEyePos[2] += ppmove->origin[2];
 
@@ -452,51 +479,111 @@ void IN_ClearStates (void)
 
 void FixupAngleDifference(usercmd_t *cmd, usercmd_t &OriginalCmd)
 {
-    // thanks tetsuo for this copy/paste
-    cl_entity_t *pLocal;
-    Vector viewforward, viewright, viewup, aimforward, aimright, aimup, vTemp;
-    float newforward, newright, newup, newmagnitude, fTime;
-    float forward = OriginalCmd.forwardmove;
-    float right = OriginalCmd.sidemove;
-    float up = OriginalCmd.upmove;
+	// thanks tetsuo for this copy/paste
+	cl_entity_t *pLocal;
+	Vector viewforward, viewright, viewup, aimforward, aimright, aimup, vTemp;
+	float newforward, newright, newup, newmagnitude, fTime;
+	float forward = OriginalCmd.forwardmove;
+	float right = OriginalCmd.sidemove;
+	float up = OriginalCmd.upmove;
 
-    pLocal = gEngfuncs.GetLocalPlayer();
-    if(!pLocal)
-        return;
+	pLocal = gEngfuncs.GetLocalPlayer();
+	if(!pLocal)
+		return;
 
-// this branch makes sure your horizontal velocity is not affected when fixing up the movement angles -- it isn't specific to spinning and you can use it with the source tetsuo posted in his forum too
-if(pLocal->curstate.movetype == MOVETYPE_WALK)
-    {
-        gEngfuncs.pfnAngleVectors(Vector(0.0f, OriginalCmd.viewangles.y, 0.0f), viewforward, viewright, viewup);
-    }
-    else
-    {
-        gEngfuncs.pfnAngleVectors(OriginalCmd.viewangles, viewforward, viewright, viewup);
-    }
+	// this branch makes sure your horizontal velocity is not affected when fixing up the movement angles -- it isn't specific to spinning and you can use it with the source tetsuo posted in his forum too
+	if(pLocal->curstate.movetype == MOVETYPE_WALK)
+	{
+		gEngfuncs.pfnAngleVectors(Vector(0.0f, OriginalCmd.viewangles.y, 0.0f), viewforward, viewright, viewup);
+	}
+	else
+	{
+		gEngfuncs.pfnAngleVectors(OriginalCmd.viewangles, viewforward, viewright, viewup);
+	}
 
-// this branch makes sure your horizontal velocity is not affected when fixing up the movement angles -- it isn't specific to spinning and you can use it with the source tetsuo posted in his forum too
-    if(pLocal->curstate.movetype == MOVETYPE_WALK)
-    {
-        gEngfuncs.pfnAngleVectors(Vector(0.0f, cmd->viewangles.y, 0.0f), aimforward, aimright, aimup);
-    }
-    else
-    {
-        gEngfuncs.pfnAngleVectors(cmd->viewangles, aimforward, aimright, aimup);
-    }
+	// this branch makes sure your horizontal velocity is not affected when fixing up the movement angles -- it isn't specific to spinning and you can use it with the source tetsuo posted in his forum too
+	if(pLocal->curstate.movetype == MOVETYPE_WALK)
+	{
+		gEngfuncs.pfnAngleVectors(Vector(0.0f, cmd->viewangles.y, 0.0f), aimforward, aimright, aimup);
+	}
+	else
+	{
+		gEngfuncs.pfnAngleVectors(cmd->viewangles, aimforward, aimright, aimup);
+	}
 
-        newforward = DotProduct(forward * viewforward.Normalize(), aimforward) + DotProduct(right * viewright.Normalize(), aimforward) + DotProduct(up * viewup.Normalize(), aimforward);
-        newright = DotProduct(forward * viewforward.Normalize(), aimright) + DotProduct(right * viewright.Normalize(), aimright) + DotProduct(up * viewup.Normalize(), aimright);
-        newup = DotProduct(forward * viewforward.Normalize(), aimup) + DotProduct(right * viewright.Normalize(), aimup) + DotProduct(up * viewup.Normalize(), aimup);
+	newforward = DotProduct(forward * viewforward.Normalize(), aimforward) + DotProduct(right * viewright.Normalize(), aimforward) + DotProduct(up * viewup.Normalize(), aimforward);
+	newright = DotProduct(forward * viewforward.Normalize(), aimright) + DotProduct(right * viewright.Normalize(), aimright) + DotProduct(up * viewup.Normalize(), aimright);
+	newup = DotProduct(forward * viewforward.Normalize(), aimup) + DotProduct(right * viewright.Normalize(), aimup) + DotProduct(up * viewup.Normalize(), aimup);
 
 	if(cmd->viewangles.x > 89.0f || cmd->viewangles.x < -89.0f) {
 		cmd->forwardmove = -newforward;
 	}else {
 		cmd->forwardmove = newforward;
 	}
-    
-    cmd->sidemove = newright;
-    cmd->upmove = newup;
+
+	cmd->sidemove = newright;
+	cmd->upmove = newup;
 }  
+
+void do_triggerbot( struct usercmd_s* cmd, bool canattack, float* aim, float* spread, float* recoil )
+{
+	//trigger bot
+	if(cvar.triggerbot && me.weapon && canattack)
+	{
+		//todo: fix triggerbot to shoot normally when nospread/norecoil is on
+		vec3_t vTrace;
+		float distance = playerItems.CurDistance();
+		float flShot[3],flForward[3];
+
+		flShot[0] = aim[0] - spread[0] + recoil[0];
+		flShot[1] = aim[1] - spread[1] + recoil[1];
+		flShot[2] = aim[2] - spread[2] + recoil[2];
+
+		gEngfuncs.pfnAngleVectors(flShot, flForward, NULL, NULL);
+
+		vTrace[0] = me.pmEyePos[0] + flForward[0] * distance;
+		vTrace[1] = me.pmEyePos[1] + flForward[1] * distance;
+		vTrace[2] = me.pmEyePos[2] + flForward[2] * distance;
+
+		int entIgnore = -1;
+		bool wall = false;
+
+		if(cvar.triggerbot == 2.0f)
+		{
+			entIgnore = 0;
+			wall = true;
+		}
+
+		pmtrace_t tr;
+
+		gEngfuncs.pEventAPI->EV_SetTraceHull(2);
+		gEngfuncs.pEventAPI->EV_PlayerTrace(me.pmEyePos, vTrace, PM_TRACELINE_PHYSENTSONLY, entIgnore, &tr);
+
+		int iEnt = gEngfuncs.pEventAPI->EV_IndexFromTrace(&tr);
+
+		cl_entity_s *ent = gEngfuncs.GetEntityByIndex(iEnt);
+
+		if ( ValidTarget(ent))
+		{
+			int damage = 1;
+			if(wall)
+			{
+				damage = CanPenetrate(me.pmEyePos, tr.endpos, 
+					playerItems.CurDistance(), 
+					playerItems.CurPenetration(),
+					playerItems.CurBulletType(),
+					playerItems.CurDamage(),
+					playerItems.CurWallPierce()
+					);
+			}
+
+			if(damage > 0)
+			{
+				cmd->buttons |= IN_ATTACK;
+			}
+		}
+	}
+}
 
 //===============
 // CL_CreateMove
@@ -507,13 +594,17 @@ if(pLocal->curstate.movetype == MOVETYPE_WALK)
 //===============
 void CL_CreateMove ( float frametime, struct usercmd_s *cmd, int active )
 {	
-	vec3_t outspread,outrecoil;
 	struct usercmd_s g_OriginalCmd;
 
+	vec3_t outspread,outrecoil;
+	vec3_t tmpspread, tmprecoil;
+	float* aimangles;
+
+	bool canAttack = false;
+	bool bAttacking = false;
+
 	gClientDll.CL_CreateMove(frametime, cmd, active);
-
 	me.frametime = frametime;
-
 	memcpy(&g_OriginalCmd,cmd,sizeof(usercmd_s));
 
 	//bunnyhop
@@ -522,20 +613,63 @@ void CL_CreateMove ( float frametime, struct usercmd_s *cmd, int active )
 		if ( cmd->buttons & IN_JUMP )
 			cmd->buttons &= ~IN_JUMP;
 	}
-	bool bAttacking = false;
-	if(GetCurWeapon()) {
-		bAttacking = cmd->buttons&IN_ATTACK && ((GetCurWeapon()->weapondata.m_flNextPrimaryAttack - cmd->msec / 1000) <= 0.0f);
-		if(cvar.autofire) {
-			if(bAttacking) {
-				cmd->buttons |= IN_ATTACK;
-			} else {
-				cmd->buttons &= ~IN_ATTACK;
-			}
+
+	if(me.weapon)
+	{
+		canAttack = (me.weapon->weapondata.m_flNextPrimaryAttack - cmd->msec / 1000) <= 0.0f;
+		bAttacking = (cmd->buttons&IN_ATTACK) && canAttack;
+	}
+
+	// Get nospread and norecoil offsets
+	gNoSpread.GetRecoilOffset(me.spread.random_seed,1,cmd->viewangles,me.pmVelocity,tmpspread);
+	ApplyNorecoil(me.punchangle,tmprecoil);
+
+	// apply norecoil to the angles if its on
+	if(cvar.norecoil)
+	{
+		VectorCopy(tmprecoil, outrecoil);
+		VectorClear(tmprecoil);
+	}
+
+	// change triggerbot operation based on the state of nospread
+	aimangles = cmd->viewangles;
+	if(cvar.nospread)
+	{
+		// we have nospread on, don't take spread into account, recoil was already
+		// cleared if it was on
+		do_triggerbot(cmd, canAttack, aimangles, vec3_t(0,0,0), tmprecoil);
+	}
+	else
+	{
+		// do the triggerbot with recoil and spread compensation
+		do_triggerbot(cmd, canAttack, aimangles, tmpspread, tmprecoil);
+	}
+
+	if( ((cvar.nospread == 1.0f) && ((cmd->buttons&IN_ATTACK && CanCurWeaponAttack()) || me.spread.burst) ) || (cvar.nospread == 2.0f) )
+	{
+		// apply nospread if its on and were shooting or bursting, or if its on constant
+		VectorCopy(tmpspread, outspread);
+	}
+
+	if( cmd->buttons&IN_ATTACK )
+	{
+		// overwrite the spinbot angles, if its on and we shoot.
+		// uses our previously stored aimbot angles or
+		// legitimate aim angles
+		cmd->viewangles = aimangles;
+	}
+
+
+	if(cvar.autofire) {
+		if(bAttacking) {
+			cmd->buttons |= IN_ATTACK;
+		} else {
+			cmd->buttons &= ~IN_ATTACK;
 		}
 	}
 
 	//spin
-	if(!bAttacking && (cvar.spinbot != 0.0f) ) {
+	if( cvar.spinbot && (!bAttacking || !canAttack) ) {
 		//thx tabris
 		int iHasShiftHeld = GetAsyncKeyState(VK_LSHIFT);
 		if(me.pmMoveType == MOVETYPE_WALK && !iHasShiftHeld && !(cmd->buttons & IN_USE))
@@ -545,24 +679,32 @@ void CL_CreateMove ( float frametime, struct usercmd_s *cmd, int active )
 		} 
 	}
 
-	if(cvar.norecoil)// && !IsCurWeaponSec())
-		ApplyNorecoil(me.punchangle,outrecoil);
-
-	if((cmd->buttons & IN_ATTACK && CanCurWeaponAttack() && cvar.nospread == 1.0f) || cvar.nospread == 2.0f)
+	// autoreload if we dryfirin'
+	if( (me.weapon) && (me.weapon->CAmmo == 0) && (cmd->buttons&IN_ATTACK))
 	{
-		gNoSpread.GetRecoilOffset(me.spread.random_seed,1,cmd->viewangles,me.pmVelocity,outspread);
+		cmd->buttons &= ~IN_ATTACK;
+		cmd->buttons |= IN_RELOAD;
 	}
 
-	newangles[0] = outspread[0] - outrecoil[0];
-	newangles[1] = outspread[1] - outrecoil[1];
+	if(cvar.novisrecoil)
+	{
+		me.spread.visangles[0] = outspread[0] - (outrecoil[0]/2.0f);
+		me.spread.visangles[1] = outspread[1] - (outrecoil[1]/2.0f);
+	}
+	else
+	{
+		me.spread.visangles[0] = outspread[0] - outrecoil[0];
+		me.spread.visangles[1] = outspread[1] - outrecoil[1];
+	}
 
-	cmd->viewangles[0] += newangles[0];
-	cmd->viewangles[1] += newangles[1];
+	VectorAdd(cmd->viewangles, outspread, cmd->viewangles);
+	VectorSubtract(cmd->viewangles, outrecoil, cmd->viewangles);
+
 
 	/*Fix walkvectors when doing spinbot and nospread/norecoil.
-	  Nospread on guns like AWP can affect the viewangles so much
-	  that when you walk forward it looks like you are drunk without
-	  this fix. */
+	Nospread on guns like AWP can affect the viewangles so much
+	that when you walk forward it looks like you are drunk without
+	this fix. */
 	FixupAngleDifference(cmd, g_OriginalCmd);
 }
 
@@ -623,11 +765,13 @@ void V_CalcRefdef( struct ref_params_s *pparams )
 			// avoid problems with free chase cam view
 			// where me.pmOrigin is the viewed player
 			VectorCopy(pparams->vieworg,me.pmEyePos);
+			gAimbot.target = BAD_TARGET;
 		}
+
 	}
 	gClientDll.V_CalcRefdef(pparams);
-//	VectorCopy(pparams->viewangles, viewangles);
-//	VectorCopy(pparams->vieworg, vieworg);
+	//	VectorCopy(pparams->viewangles, viewangles);
+	//	VectorCopy(pparams->vieworg, vieworg);
 }
 
 static void AddEntityPlayer(struct cl_entity_s *ent)
@@ -656,7 +800,7 @@ static void AddEntityPlayer(struct cl_entity_s *ent)
 
 		playerCalcExtraData(px,ent);
 		//playerRenderOptions(ent);
-		
+
 		ent->curstate.rendermode = 0; // fix render mode
 	}
 }
@@ -822,6 +966,11 @@ void HUD_Frame( double time )
 //===========
 int HUD_Key_Event( int down, int keynum, const char *pszCurrentBinding )
 {
+	if( (keynum == K_HOME) && down )
+	{
+		gDebug.bShow = !gDebug.bShow;
+	}
+
 	if(CMenuControl::HUD_Key_Event(down, keynum, pszCurrentBinding)) {
 		return gClientDll.HUD_Key_Event(down, keynum, pszCurrentBinding);
 	}
@@ -836,6 +985,56 @@ int HUD_Key_Event( int down, int keynum, const char *pszCurrentBinding )
 //================
 void HUD_TempEntUpdate (double frametime, double client_time, double cl_gravity, TEMPENTITY **ppTempEntFree, TEMPENTITY **ppTempEntActive, int ( *Callback_AddVisibleEntity )( cl_entity_t *pEntity ), void ( *Callback_TempEntPlaySound )( TEMPENTITY *pTemp, float damp ) )
 {
+	if(cvar.light)
+	{
+		if(me.alive)
+		{
+			dlight_t	*dl		= gEngfuncs.pEfxAPI->CL_AllocDlight(0);
+
+			if(me.team==TEAM_TERROR)//if the player is in team 1 (T)
+			{
+				dl->color.r = 255; //assign these colors
+				dl->color.g = 50;
+				dl->color.b = 50;
+			}
+			if(me.team==TEAM_CT)//if the player is on team2 (CT)
+			{
+				dl->color.r = 50; //assign these colors
+				dl->color.g = 50;
+				dl->color.b = 255;
+			}
+			dl->origin	=	me.pmEyePos; // this is the origin (location of the players)
+			dl->radius	=	150; //radius of the light
+			dl->die		=	client_time + 0.01; //after how long the light gets killed.
+		}
+
+	}
+	if(cvar.tlight)
+	{
+		if((gAimbot.target != BAD_TARGET) && cvar.aim)
+		{
+			dlight_t	*dl		= gEngfuncs.pEfxAPI->CL_AllocDlight(0);
+			PlayerInfo&  target = vPlayers[gAimbot.target];
+
+			if(target.team==TEAM_TERROR)//if the player is in team 1 (T)
+			{
+				dl->color.r = 255; //assign these colors
+				dl->color.g = 50;
+				dl->color.b = 50;
+			}
+			if(target.team==TEAM_CT)//if the player is on team2 (CT)
+			{
+				dl->color.r = 50; //assign these colors
+				dl->color.g = 50;
+				dl->color.b = 255;
+			}
+
+			dl->origin	=	target.origin(); // this is the origin (location of the players)
+			dl->radius	=	150; //radius of the light
+			dl->die		=	client_time + 0.01; //after how long the light gets killed.
+		}
+	}
+	ClientTime::reportMapTime(client_time);
 	return gClientDll.HUD_TempEntUpdate(frametime, client_time, cl_gravity, ppTempEntFree, ppTempEntActive, Callback_AddVisibleEntity, Callback_TempEntPlaySound);
 }
 

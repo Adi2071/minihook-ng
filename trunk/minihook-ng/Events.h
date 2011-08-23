@@ -2,6 +2,11 @@
 #define __EVENT_
 
 typedef void ( *pfnEvent )( struct event_args_s *args );
+typedef void ( *pfnFireBullets )( int idx, float *forward, float *right, float *up, int cShots, float *vecSrc, float *vecDirShooting, float flDistance, int iBulletType, int iTracerFreq, int *tracerCount, float flSpreadX, float flSpreadY );
+
+// All mods
+void hEV_HLDM_FireBullets (int idx, float *forward, float *right, float *up, int cShots, float *vecSrc, float *vecDirShooting, float flDistance, int iBulletType, int iTracerFreq, int *tracerCount, float flSpreadX, float flSpreadY);
+extern pfnFireBullets pEV_HLDM_FireBullets;
 
 // Counterstrike
 void hglock1 (struct event_args_s *args);
@@ -352,7 +357,5 @@ extern pfnEvent pexplode_tf_emp;
 extern pfnEvent pexplode_tf_ng;
 extern pfnEvent pmisc_gibs;
 extern pfnEvent pmisc_benchmark;
-
-
 
 #endif

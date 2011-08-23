@@ -96,7 +96,7 @@ void PlayerItems::SetWeaponData(struct HlWeaponInfo *weapon)
 		case WEAPONLIST_XM1014:
 			weapon->ClipCap = CLIPCAP_XM1014;
 			weapon->penetrate = WALL_PEN0;
-			weapon->distance = 0.0f;
+			weapon->distance = 3048.0f;
 			weapon->wallpierce1 = 0.0f;
 			weapon->wallpierce2 = 0.0f;
 			weapon->damage1 = 0;
@@ -236,7 +236,7 @@ void PlayerItems::SetWeaponData(struct HlWeaponInfo *weapon)
 		case WEAPONLIST_M3:
 			weapon->ClipCap = CLIPCAP_M3;
 			weapon->penetrate = WALL_PEN0;
-			weapon->distance = 0.0f;
+			weapon->distance = 3000.0f;
 			weapon->wallpierce1 = 0.0f;
 			weapon->wallpierce2 = 0.0f;
 			weapon->damage1 = 0;

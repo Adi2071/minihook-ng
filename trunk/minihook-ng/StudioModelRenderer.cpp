@@ -6,15 +6,6 @@
 // This pointer to CStudioModelRenderer class !
 StudioModelRenderer_d pThis;
 
-int GetPlayerByIndex(int eidx) {
-	for(int i = 0; i < MAX_VPLAYERS; i++) {
-		if(vPlayers[i].getEnt()->index == eidx) {
-			return i;
-		}
-	}
-
-	return -1;
-}
 //=========================
 // StudioDrawModel
 //=========================
@@ -158,6 +149,22 @@ void StudioCalcRotations( float pos[][3], vec4_t *q, mstudioseqdesc_t *pseqdesc,
 }
 
 //=========================
+// StudioCheckBBox
+// Check if entity's bbox is
+// in the view frustrum
+//=========================
+bool StudioCheckBBox ( void )
+{
+/*	cl_entity_t* ent = gStudio.GetCurrentEntity();
+	if(cvar.gsaim && ent && ent->player)
+	{
+		return true;
+	}*/
+
+	return gStudio.StudioCheckBBox();
+}
+
+//=========================
 // StudioRenderModel
 // Send bones and verts to renderer
 //=========================
@@ -166,12 +173,13 @@ void StudioRenderModel ( void )
 	int plindex;
 	cl_entity_t* p_anentity = NULL;
 
+	oStudioRenderModel();
+
 	if(gStudio.GetCurrentEntity())
 		p_anentity = gStudio.GetCurrentEntity();
-	if(p_anentity)
-	if(p_anentity->player)
+	if(p_anentity && p_anentity->player)
 	{
-		plindex = GetPlayerByIndex(p_anentity->index);
+		plindex = p_anentity->index;
 		if(plindex != -1)
 		if(!vPlayers[plindex].gotbones) //gotbones is a bool which is reset for every player in every Draw() call
 		{
@@ -191,7 +199,6 @@ void StudioRenderModel ( void )
 			vPlayers[plindex].gotbones = true;
 		}
 	}
-	oStudioRenderModel();
 }
 
 //=========================
