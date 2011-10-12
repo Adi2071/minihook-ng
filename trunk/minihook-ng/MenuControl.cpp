@@ -12,8 +12,9 @@ int CMenuControl::HUD_Key_Event(int down, int keynum, const char *pszCurrentBind
 
 	CMenuElem& rCurMenuElem = pCurMenu->vElems.at(pCurMenu->iMenuIndex);
 
-	if(keynum == K_INS) {
+	if(keynum == K_INS && down) {
 		gMenu.bShow = !gMenu.bShow;
+		return 0;
 	}
 
 	if(gMenu.bShow && down) {
@@ -32,6 +33,15 @@ int CMenuControl::HUD_Key_Event(int down, int keynum, const char *pszCurrentBind
 			{
 				if(pCurMenu->iMenuIndex < pCurMenu->vElems.size()-1) {
 					pCurMenu->iMenuIndex++;
+				}
+				return 0;
+			}
+
+			case K_MOUSE3:
+			{
+				if(rCurMenuElem.ElemType == ELEM_VALUE)
+				{
+					*rCurMenuElem.pfCurrentValue = 0.0f;
 				}
 				return 0;
 			}

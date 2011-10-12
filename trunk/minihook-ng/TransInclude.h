@@ -14,7 +14,7 @@
 #include "UserMsgs.h"
 #include "cvar.h"
 
-extern double *pGlobalTime;
+extern double *pGlobalSpeed;
 extern float *pFOV;
 
 

@@ -24,6 +24,21 @@
 bool bIsEntValid(cl_entity_s * ent);
 void updateLocalPlayer();
 
+// credit Tetsuo
+extern int Cstrike_SequenceInfo[];
+
+enum 
+{
+    SEQUENCE_IDLE     = 0, 
+    SEQUENCE_SHOOT    = 1, 
+    SEQUENCE_RELOAD   = 2, 
+    SEQUENCE_DIE      = 4, 
+    SEQUENCE_THROW    = 8, 
+    SEQUENCE_ARM_C4   = 16, 
+    SEQUENCE_SHIELD   = 32,
+    SEQUENCE_SHIELD_SIDE = 64
+};
+
 //the following is from ogc
 // from cldll_int.h 
 #ifndef CDLL_INT_H
@@ -72,6 +87,7 @@ typedef struct
 	int burst;
 	// no visual spread angles
 	float visangles[3];
+	vec3_t drawangles;
 	
 }spread_info;
 
@@ -158,7 +174,11 @@ class PlayerInfo
 private:
 	int     m_lastUpdateType;
 	double  m_lastUpdateTime;
-	vec3_t   m_origin;
+	vec3_t  m_origin;
+	vec3_t	m_lastOrigin;
+	vec3_t	m_velocity;
+	vec3_t  m_lastVelocity;
+	vec3_t  m_acceleration;
 	char    m_weapon[32];
 
 	bool alive;
@@ -231,6 +251,19 @@ public:
 	{ 
 		m_lastUpdateType=UPDATE_MISSING; 
 	}
+
+	void calcAcceleration(void)
+	{
+		m_acceleration = m_velocity - m_lastVelocity;
+	}
+
+	void calcVelocity(void)
+	{
+		m_lastVelocity = m_velocity;
+		m_velocity = m_origin - m_lastOrigin;
+		
+		calcAcceleration();
+	}
 	
 	void   updateAddEntity (const float* neworg)
 	{ 
@@ -238,7 +271,9 @@ public:
 		{
 			m_lastUpdateType=UPDATE_ADDENT; 
 			m_lastUpdateTime=ClientTime::current; 
+			VectorCopy(m_origin, m_lastOrigin);
 			VectorCopy(neworg,m_origin); 
+			calcVelocity();
 		}
 	}
 	void   updateSoundRadar(const float* neworg)   
@@ -249,7 +284,9 @@ public:
 			{
 				m_lastUpdateType=UPDATE_SOUND_RADAR;  
 				m_lastUpdateTime=ClientTime::current; 
+				VectorCopy(m_origin, m_lastOrigin);
 				VectorCopy(neworg,m_origin); 
+				calcVelocity();
 			}
 		}
 	}
@@ -259,7 +296,10 @@ public:
 	bool   isUpdated       ()    { return m_lastUpdateType!=UPDATE_MISSING; }
 	bool   isUpdatedAddEnt ()    { return m_lastUpdateType==UPDATE_ADDENT;  }
 	int    updateType()          { return m_lastUpdateType; }
-	vec3_t  origin()       { return m_origin; }
+	vec3_t origin()				 { return m_origin; }
+	vec3_t lastOrigin()			 { return m_lastOrigin; }
+	vec3_t velocity()			 { return m_velocity; }
+	vec3_t acceleration()		 { return m_acceleration; }
 	float  timeSinceLastUpdate() { return (float)(ClientTime::current-m_lastUpdateTime); }
 	bool   fresh		   ()    { return isUpdated() && (timeSinceLastUpdate()<me.frametime); }
 

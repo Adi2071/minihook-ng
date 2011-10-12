@@ -17,7 +17,7 @@ StudioModelRenderer_t	gStudioModelRenderer;
 ClientDll_t				gClientDll;
 cl_enginefunc_t			gEngfuncs;
 engine_studio_api_t		gStudio;
-double*					pGlobalTime;
+double*					pGlobalSpeed;
 float*					pFOV;
 HookPanel*				p_hkRootPanel;
 
@@ -454,19 +454,19 @@ void SetupHooks(void)
 	pClientDll = (ClientDll_t*)gOffsets.ClientFuncs();//OffsetExportTable();
 	pEngfuncs = (cl_enginefunc_t*)gOffsets.EngineFuncs();//OffsetEngineFunc();
 	pStudio = (engine_studio_api_t*)gOffsets.EngineStudio();//OffsetEngineStudio();
-	pGlobalTime = (double*)gOffsets.GlobalTime();
+	pGlobalSpeed = (double*)gOffsets.GlobalSpeed();
 	pFOV = (float*)gOffsets.FOV();
 	pEV_HLDM_FireBullets = (pfnFireBullets)gOffsets.FireBullets();
 	ppRootPanel = (vgui::Panel**)gOffsets.RootPanel();
 
-	if(!pStudioModelRenderer || !pClientDll || !pEngfuncs || !pStudio || !pGlobalTime || !pFOV || !pEV_HLDM_FireBullets || !ppRootPanel)// || !pPreS_DynamicSound)
+	if(!pStudioModelRenderer || !pClientDll || !pEngfuncs || !pStudio || !pGlobalSpeed || !pFOV || !pEV_HLDM_FireBullets || !ppRootPanel)// || !pPreS_DynamicSound)
 		return;
 
 	add_log("pStudioModelRenderer: 0x%X", pStudioModelRenderer);
 	add_log("pClientDll: 0x%X", pClientDll);
 	add_log("pEngfuncs: 0x%X", pEngfuncs);
 	add_log("pStudio: 0x%X", pStudio);
-	add_log("pGlobalTime: 0x%X", pGlobalTime);
+	add_log("pGlobalSpeed: 0x%X", pGlobalSpeed);
 	add_log("pFOV: 0x%X", pFOV);
 	add_log("pEV_HLDM_FireBullets: 0x%x (client.dll + 0x%x)", pEV_HLDM_FireBullets, (DWORD)pEV_HLDM_FireBullets - ClientBase);
 
@@ -565,8 +565,8 @@ BOOL WINAPI DllMain(HINSTANCE hinstDLL, DWORD fdwReason, PVOID unused)
 		detLoadLibrary = new Detour_c((DWORD)LoadLibraryA, (DWORD)xLoadLibraryA);
 		oLoadLibraryA = (HMODULE(WINAPI*)(LPCSTR))detLoadLibrary->SetupDetour();
 
-		detGetProcAddress = new Detour_c((DWORD)GetProcAddress, (DWORD)xGetProcAddress);
-		oGetProcAddress = (FARPROC(WINAPI*)(HMODULE,LPCSTR))detGetProcAddress->SetupDetour();
+		//detGetProcAddress = new Detour_c((DWORD)GetProcAddress, (DWORD)xGetProcAddress);
+		//oGetProcAddress = (FARPROC(WINAPI*)(HMODULE,LPCSTR))detGetProcAddress->SetupDetour();
 	}
 
 	if(fdwReason == DLL_PROCESS_DETACH) {

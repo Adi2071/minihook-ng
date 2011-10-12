@@ -54,6 +54,12 @@ void *COffsets::GlobalTime(void)
 	return (void*)*(DWORD*)(FindMemoryClone(HwBase, HwBase+HwSize, Sig, sizeof(Sig)-1) + 0x04);
 }
 
+void *COffsets::GlobalSpeed(void)
+{
+	UCHAR Sig[] = "\xDC\x0D\xFF\xFF\xFF\xFF\xD8\x00\xD9\x18\x8B\x44\x24\x34\xFF\x00\x8B\x54\x24\x2C";
+	return (void*)*(DWORD*)(FindMemoryClone(HwBase, HwBase+HwSize, Sig, sizeof(Sig)-1) + 0x02);
+}
+
 void *COffsets::PlayerMove(void)
 {
 	UCHAR Sig[] = "\xA1\xFF\xFF\xFF\xFF\x8B\x0D\xFF\xFF\xFF\xFF\x8B\x95\xFF\xFF\xFF\xFF\x8D\x74\x24\xFF";

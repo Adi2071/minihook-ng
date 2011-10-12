@@ -168,18 +168,46 @@ bool StudioCheckBBox ( void )
 // StudioRenderModel
 // Send bones and verts to renderer
 //=========================
+extern int team;
 void StudioRenderModel ( void )
 {
 	int plindex;
-	cl_entity_t* p_anentity = NULL;
 
-	oStudioRenderModel();
+	cl_entity_s* ent = gStudio.GetCurrentEntity();
 
-	if(gStudio.GetCurrentEntity())
-		p_anentity = gStudio.GetCurrentEntity();
-	if(p_anentity && p_anentity->player)
+	if(cvar.lambert)
 	{
-		plindex = p_anentity->index;
+		if(ent && ent->player)
+		{
+			team = vPlayers[ent->index].team;
+			if((team == TEAM_TERROR))
+			{
+				ent->curstate.rendercolor.r = 255;
+				ent->curstate.rendercolor.g = 0;
+				ent->curstate.rendercolor.b = 0;
+			}
+			else if((team == TEAM_CT))
+			{
+				ent->curstate.rendercolor.r = 0;
+				ent->curstate.rendercolor.g = 0;
+				ent->curstate.rendercolor.b = 255;
+			}
+
+			ent->curstate.renderamt = 1;
+			glDepthFunc(GL_GREATER);
+			gStudio.SetForceFaceFlags( STUDIO_NF_FULLBRIGHT ); 
+			glDisable(GL_TEXTURE_2D);
+			oStudioRenderFinal();
+		}
+	}
+	else
+	{
+		oStudioRenderModel();
+	}
+
+	if(ent && ent->player)
+	{
+		plindex = ent->index;
 		if(plindex != -1)
 		if(!vPlayers[plindex].gotbones) //gotbones is a bool which is reset for every player in every Draw() call
 		{

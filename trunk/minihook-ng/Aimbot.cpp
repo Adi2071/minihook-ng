@@ -60,22 +60,32 @@ bool OriginAimbot::isValidEnt(cl_entity_s *ent) // Credits to Tetsuo
 //===================================================================================
 void OriginAimbot::PredictTarget(int index,float *pred)
 {
-	float predahead = cvar.predahead/10.0f; // Some default Values ;D
+	float predahead = cvar.predahead; // Some default Values ;D
 	int predback = 0;
 			cl_entity_s* ent = pEngfuncs->GetEntityByIndex(index);
-			int  historyIndex = (ent->current_position+HISTORY_MAX-predback)%HISTORY_MAX;
+			
+			float latency;
+			net_status_s net;
+			//int  historyIndex = (ent->current_position+HISTORY_MAX-predback)%HISTORY_MAX;
 			
 			vec3_t vFromOrigin , vToOrigin , vDeltaOrigin,vPredictedOrigin;
+			//vFromOrigin = //ent->ph[historyIndex].origin;
+			//vToOrigin   = //ent->ph[ent->current_position].origin;
+			vDeltaOrigin = vPlayers[index].velocity() + vPlayers[index].acceleration() - (vPlayers[me.entindex].velocity() + vPlayers[me.entindex].acceleration());//vToOrigin - vFromOrigin;
 
-			vFromOrigin = ent->ph[historyIndex].origin;
-			vToOrigin   = ent->ph[ent->current_position].origin;
-			vDeltaOrigin = vToOrigin - vFromOrigin;
+			gEngfuncs.pNetAPI->Status(&net);
+			latency = net.latency;
+			if( latency > 1.0f )
+			{
+				predahead *= (latency / 1000.0f) + me.frametime;
+			}
 
 			vDeltaOrigin[0] *= predahead;
 			vDeltaOrigin[1] *= predahead;
 			vDeltaOrigin[2] *= predahead;
 
 			vPredictedOrigin = vDeltaOrigin;
+
 			VectorCopy(vPredictedOrigin,pred);
 }
 //===================================================================================
@@ -192,10 +202,6 @@ void OriginAimbot::FindTarget(void) // Lets do it, common !
 		PredictTarget(ax, oaim);
 		VectorAdd(oaim, targetSpot, oaim);
 	
-		VectorCopy(me.pmVelocity, velocity);
-		VectorScale(velocity, me.frametime*2.0f, velocity);
-
-		VectorSubtract(oaim, velocity, oaim);
 		playerAngles[0]=0;
 		playerAngles[1]=ent->angles[1];
 		playerAngles[2]=0;
