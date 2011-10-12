@@ -16,6 +16,7 @@ public:
 	void *EngineStudio(void);
 	void *FOV(void);
 	void *GlobalTime(void);
+	void *GlobalSpeed(void);
 	void *PlayerMove(void);
 	void *RefParams(void);
 	void *StudioModelRenderer(void);

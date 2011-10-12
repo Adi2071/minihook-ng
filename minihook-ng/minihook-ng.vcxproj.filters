@@ -4,9 +4,6 @@
     <Filter Include="Engine Calls">
       <UniqueIdentifier>{c7f03253-64c5-4545-8151-1c51805a4952}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Engine Calls\StudioModelRenderer">
-      <UniqueIdentifier>{6dbbcee7-e69c-444a-a9ec-04b770f00068}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Engine Calls\ClientDll">
       <UniqueIdentifier>{c2e7c536-8889-4ae4-92ff-b2dfb067814f}</UniqueIdentifier>
     </Filter>
@@ -70,13 +67,16 @@
     <Filter Include="Engine Calls\VGUI">
       <UniqueIdentifier>{16c3ac58-47d7-42d1-9bb6-e3ba264d3830}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Engine Calls\UserMsgs\StudioModelRenderer">
+      <UniqueIdentifier>{6dbbcee7-e69c-444a-a9ec-04b770f00068}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="TransInclude.h">
       <Filter>Engine Calls</Filter>
     </ClInclude>
     <ClInclude Include="StudioModelRenderer.h">
-      <Filter>Engine Calls\StudioModelRenderer</Filter>
+      <Filter>Engine Calls\UserMsgs\StudioModelRenderer</Filter>
     </ClInclude>
     <ClInclude Include="ClientDll.h">
       <Filter>Engine Calls\ClientDll</Filter>
@@ -847,7 +847,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="StudioModelRenderer.cpp">
-      <Filter>Engine Calls\StudioModelRenderer</Filter>
+      <Filter>Engine Calls\UserMsgs\StudioModelRenderer</Filter>
     </ClCompile>
     <ClCompile Include="ClientDll.cpp">
       <Filter>Engine Calls\ClientDll</Filter>

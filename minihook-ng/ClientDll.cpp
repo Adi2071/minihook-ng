@@ -29,6 +29,39 @@ VecTargets vTargets;
 
 CMenuElem gDebug("DEBUG", ELEM_BASEMENU, NULL);
 
+//credit Tetsuo
+extern int Cstrike_SequenceInfo[] = 
+{
+    0,    0,    0,    0,    0,    0,    0,    0,    0,    0, // 0..9   
+    0,    1,    2,    0,    1,    2,    0,    1,    2,    0, // 10..19 
+    1,    2,    0,    1,    1,    2,    0,    1,    1,    2, // 20..29 
+    0,    1,    2,    0,    1,    2,    0,    1,    2,    0, // 30..39 
+    1,    2,    0,    1,    2,    0,    1,    2,    0,    1, // 40..49 
+    2,    0,    1,    2,    0,    0,    0,    8,    0,    8, // 50..59 
+    0,    16,   0,   16,    0,    0,    1,    1,    2,    0, // 60..69  Updates thanks to Tetsuo <3
+    1,    1,    2,    0,    1,    0,    1,    0,    1,    2, // 70..79 
+    0,    1,    2,   32,   40,   32,   40,   32,   32,   32, // 80..89
+   33,   32,   33,   34,   64,    4,   34,   32,   32,    4, // 90..99
+    4,    4,    4,    4,    4,    4,    4,    4,    4,    4, // 100..109
+    4														 // 110
+};  
+
+//credit Sploosh of GD
+void AdjustSpeed(double x)
+{
+	DWORD d, ds;
+	DWORD dwSpeedptr = (DWORD)pGlobalSpeed;
+	
+    VirtualProtect((PVOID)dwSpeedptr, 8, PAGE_EXECUTE_READWRITE, &d);
+	*(double*)dwSpeedptr = (x * 1000);
+	VirtualProtect((PVOID)dwSpeedptr, 8,d,&ds);
+}
+
+void DefaultSpeed(void)
+{
+	AdjustSpeed(1);
+}
+
 //========================================================================================
 static bool isFakePlayer(int ax, cl_entity_s* ent);
 //========================================================================================
@@ -88,12 +121,12 @@ static bool isFakePlayer(int ax, cl_entity_s* ent)
 	if( ax==me.entindex )                 { return true; }
 	switch(ent->curstate.rendermode)
 	{
-	case kRenderTransColor:
+	/*case kRenderTransColor:
 	case kRenderTransTexture: 
 		if( ent->curstate.renderamt<128 ) { return true;  }
-		else                              { return false; }
+		else                              { return false; }*/
 	case kRenderNormal: { return false; }
-	default:            { return true;  }
+	//default:            { return true;  }
 	}
 }
 
@@ -187,6 +220,8 @@ int Initialize( cl_enginefunc_t *pEnginefuncs, int iVersion )
 	CMenuElem meLight("Light (me)", ELEM_VALUE, &cvar.light);
 	CMenuElem targetLight("Targetlight (aimbot)", ELEM_VALUE, &cvar.tlight);
 	CMenuElem showBone("Skeleton", ELEM_VALUE, &cvar.bone);
+	//CMenuElem drawSpread("Draw Spread", ELEM_VALUE, &cvar.drawspread);
+	//CMenuElem lambert("Lambert", ELEM_VALUE, &cvar.lambert);
 	CMenuElem zoomAll("Zoom with all weapons", ELEM_VALUE, &cvar.zoomall);
 
 
@@ -195,6 +230,8 @@ int Initialize( cl_enginefunc_t *pEnginefuncs, int iVersion )
 	visualsMenu.AddElement(meLight);
 	visualsMenu.AddElement(targetLight);
 	visualsMenu.AddElement(showBone);
+	//visualsMenu.AddElement(drawSpread);
+	//visualsMenu.AddElement(lambert);
 	visualsMenu.AddElement(zoomAll);
 
 
@@ -212,14 +249,25 @@ int Initialize( cl_enginefunc_t *pEnginefuncs, int iVersion )
 
 	//Weapons menu
 	CMenuElem autoAim("Autoaim", ELEM_VALUE, &cvar.aim);
+	autoAim.SetMaximumValue(2.0f);
+	CMenuElem aimSpot("Aimspot", ELEM_VALUE, &cvar.aimspot);
+	aimSpot.SetMaximumValue(3.0f);
 	CMenuElem aimPred("Aim prediction", ELEM_VALUE, &cvar.predahead);
-	aimPred.SetMaximumValue(100.0f);
+	aimPred.SetMaximumValue(2.0f);
+	CMenuElem speedReload("Speed Reload", ELEM_VALUE, &cvar.speedreload);
+	CMenuElem shootTarget("Shoot target", ELEM_VALUE, &cvar.shoottarget);
+	CMenuElem recoilCap("Recoil limit", ELEM_VALUE, &cvar.recoilcap);
+	recoilCap.SetMaximumValue(15.0f);
 	CMenuElem autoFire("Autofire (rapid pistol)", ELEM_VALUE, &cvar.autofire);
 	CMenuElem triggerBot("Triggerbot", ELEM_VALUE, &cvar.triggerbot);
 	triggerBot.SetMaximumValue(2.0f);
 
 	CMenuElem weaponsMenu("Weapon Options", ELEM_SUBMENU, NULL);
 	weaponsMenu.AddElement(autoAim);
+	weaponsMenu.AddElement(aimSpot);
+	weaponsMenu.AddElement(speedReload);
+	weaponsMenu.AddElement(shootTarget);
+	weaponsMenu.AddElement(recoilCap);
 	weaponsMenu.AddElement(aimPred);
 	weaponsMenu.AddElement(autoFire);
 	weaponsMenu.AddElement(triggerBot);
@@ -227,10 +275,13 @@ int Initialize( cl_enginefunc_t *pEnginefuncs, int iVersion )
 	//Others menu
 	CMenuElem bunnyHop("Bunny Hop", ELEM_VALUE, &cvar.bunnyhop);
 	CMenuElem spinBot("Spin Bot", ELEM_VALUE, &cvar.spinbot);
+	CMenuElem speedHack("Speedhack", ELEM_VALUE, &cvar.speed);
+	speedHack.SetMaximumValue(2.0f);
 
 	CMenuElem othersMenu("Fun Shit", ELEM_SUBMENU, NULL);
 	othersMenu.AddElement(bunnyHop);
 	othersMenu.AddElement(spinBot);
+	othersMenu.AddElement(speedHack);
 
 	//Add all elements to basemenu-------------------------------
 	gMenu.Initialize();
@@ -258,7 +309,9 @@ int Initialize( cl_enginefunc_t *pEnginefuncs, int iVersion )
 //=========================
 void HUD_Init( void )
 {
-	return gClientDll.HUD_Init();
+	gClientDll.HUD_Init();
+	gEngfuncs.pfnClientCmd("unbind ins");
+	gEngfuncs.pfnClientCmd("unbind del");
 }
 
 //=========================
@@ -336,6 +389,33 @@ void DrawingDraw(void)
 	}
 }
 
+void DrawSpread()
+{
+	vec3_t spreadangles;
+	vec3_t forward;
+	vec3_t eyepos;
+	vec3_t screen;
+
+	if(cvar.drawspread && me.weapon)
+	{
+		pmtrace_t tr;
+		VectorAdd(me.viewAngles, me.spread.drawangles, spreadangles);
+
+		gEngfuncs.pfnAngleVectors(me.viewAngles, forward, NULL, NULL);
+
+		gEngfuncs.pEventAPI->EV_SetTraceHull(2);
+		eyepos = me.pmEyePos;
+		gEngfuncs.pEventAPI->EV_PlayerTrace(eyepos, eyepos + (forward * playerItems.CurDistance()),PM_GLASS_IGNORE, -1, &tr);
+
+		CalcScreen(tr.endpos, screen);
+
+		DrawingBegin();
+		DrawingSetColor(255, 0, 0, 255);
+		DrawingDrawCircle(screen.x-1, screen.y-1, 3);
+		DrawingEnd();
+	}
+}
+
 //=========================
 // HUD_Redraw
 // 
@@ -349,13 +429,14 @@ int HUD_Redraw( float time, int intermission )
 
 	if(cvar.aim && me.alive)
 	{
-		gAimbot.FindTarget();
-		dvar.aimtarget = gAimbot.target;
 		if(gAimbot.target != BAD_TARGET)
 		{
-			gEngfuncs.SetViewAngles(gAimbot.targetAngles);
+			// silent aim is number two
+			if(cvar.aim != 2.0f) gEngfuncs.SetViewAngles(gAimbot.targetAngles);
 		}
 	}
+
+	//DrawSpread();
 
 	DrawingBegin();
 	DrawingDraw();
@@ -364,7 +445,7 @@ int HUD_Redraw( float time, int intermission )
 	CMenuDraw::Draw(gMenu, 100, 100);
 	CMenuDraw::Draw(gDebug, 400, 100);
 
-	vPlayers.ClearTargetSpots();
+	//vPlayers.ClearTargetSpots();
 	return Result;
 }
 
@@ -515,12 +596,7 @@ void FixupAngleDifference(usercmd_t *cmd, usercmd_t &OriginalCmd)
 	newright = DotProduct(forward * viewforward.Normalize(), aimright) + DotProduct(right * viewright.Normalize(), aimright) + DotProduct(up * viewup.Normalize(), aimright);
 	newup = DotProduct(forward * viewforward.Normalize(), aimup) + DotProduct(right * viewright.Normalize(), aimup) + DotProduct(up * viewup.Normalize(), aimup);
 
-	if(cmd->viewangles.x > 89.0f || cmd->viewangles.x < -89.0f) {
-		cmd->forwardmove = -newforward;
-	}else {
-		cmd->forwardmove = newforward;
-	}
-
+	cmd->forwardmove = newforward;
 	cmd->sidemove = newright;
 	cmd->upmove = newup;
 }  
@@ -592,13 +668,14 @@ void do_triggerbot( struct usercmd_s* cmd, bool canattack, float* aim, float* sp
 // if active == 1 then we are 1) not playing back demos ( where our commands are ignored ) and
 // 2 ) we have finished signing on to server
 //===============
+double keyspeed = 0.0;
 void CL_CreateMove ( float frametime, struct usercmd_s *cmd, int active )
 {	
 	struct usercmd_s g_OriginalCmd;
 
-	vec3_t outspread,outrecoil;
-	vec3_t tmpspread, tmprecoil;
-	float* aimangles;
+	float outspread[3],outrecoil[3];
+	float tmpspread[3], tmprecoil[3];
+	float aimangles[3];
 
 	bool canAttack = false;
 	bool bAttacking = false;
@@ -620,6 +697,13 @@ void CL_CreateMove ( float frametime, struct usercmd_s *cmd, int active )
 		bAttacking = (cmd->buttons&IN_ATTACK) && canAttack;
 	}
 
+	if(cvar.aim && gAimbot.target != BAD_TARGET) {
+		VectorCopy(gAimbot.targetAngles, cmd->viewangles);
+	}
+
+	//save our aiming angles
+	VectorCopy(cmd->viewangles, aimangles);
+
 	// Get nospread and norecoil offsets
 	gNoSpread.GetRecoilOffset(me.spread.random_seed,1,cmd->viewangles,me.pmVelocity,tmpspread);
 	ApplyNorecoil(me.punchangle,tmprecoil);
@@ -632,7 +716,6 @@ void CL_CreateMove ( float frametime, struct usercmd_s *cmd, int active )
 	}
 
 	// change triggerbot operation based on the state of nospread
-	aimangles = cmd->viewangles;
 	if(cvar.nospread)
 	{
 		// we have nospread on, don't take spread into account, recoil was already
@@ -645,20 +728,37 @@ void CL_CreateMove ( float frametime, struct usercmd_s *cmd, int active )
 		do_triggerbot(cmd, canAttack, aimangles, tmpspread, tmprecoil);
 	}
 
+	if((cvar.shoottarget > 0.0f) && (gAimbot.target != -1)) {
+		bool bShoot = true;
+		if(cvar.recoilcap > 0.0f) {
+			if(me.spread.recoil > (int)cvar.recoilcap) {
+				bShoot = false;
+			}
+		}
+
+		if(bShoot == true && canAttack) {
+			cmd->buttons |= IN_ATTACK;
+		}
+	}
+
+	bAttacking = (cmd->buttons&IN_ATTACK) && canAttack;
+
 	if( ((cvar.nospread == 1.0f) && ((cmd->buttons&IN_ATTACK && CanCurWeaponAttack()) || me.spread.burst) ) || (cvar.nospread == 2.0f) )
 	{
 		// apply nospread if its on and were shooting or bursting, or if its on constant
 		VectorCopy(tmpspread, outspread);
 	}
 
-	if( cmd->buttons&IN_ATTACK )
-	{
-		// overwrite the spinbot angles, if its on and we shoot.
-		// uses our previously stored aimbot angles or
-		// legitimate aim angles
-		cmd->viewangles = aimangles;
+	VectorCopy(aimangles, cmd->viewangles);
+	//spin
+	if( cvar.spinbot && (!bAttacking) ) {
+		//thx tabris
+		int iHasShiftHeld = GetAsyncKeyState(VK_LSHIFT);
+		if(me.pmMoveType == MOVETYPE_WALK && !iHasShiftHeld && !(cmd->buttons & IN_USE))
+		{
+			cmd->viewangles.y = fmod(gEngfuncs.GetClientTime() * 2.0f * 360.0f, 360.0f);
+		} 
 	}
-
 
 	if(cvar.autofire) {
 		if(bAttacking) {
@@ -668,16 +768,6 @@ void CL_CreateMove ( float frametime, struct usercmd_s *cmd, int active )
 		}
 	}
 
-	//spin
-	if( cvar.spinbot && (!bAttacking || !canAttack) ) {
-		//thx tabris
-		int iHasShiftHeld = GetAsyncKeyState(VK_LSHIFT);
-		if(me.pmMoveType == MOVETYPE_WALK && !iHasShiftHeld && !(cmd->buttons & IN_USE))
-		{
-			cmd->viewangles.x = fmod(gEngfuncs.GetClientTime() * 1.0f * 360.0f, 360.0f) - 180.0f;
-			cmd->viewangles.y = fmod(gEngfuncs.GetClientTime() * 2.0f * 360.0f, 360.0f);
-		} 
-	}
 
 	// autoreload if we dryfirin'
 	if( (me.weapon) && (me.weapon->CAmmo == 0) && (cmd->buttons&IN_ATTACK))
@@ -685,6 +775,41 @@ void CL_CreateMove ( float frametime, struct usercmd_s *cmd, int active )
 		cmd->buttons &= ~IN_ATTACK;
 		cmd->buttons |= IN_RELOAD;
 	}
+
+	int sequence = Cstrike_SequenceInfo[gEngfuncs.GetEntityByIndex(me.entindex)->curstate.sequence];
+	double speed = 1.0;
+	speed += keyspeed;
+
+	if(cvar.speedreload && sequence == SEQUENCE_RELOAD) {
+		speed = 100.0;
+	}
+
+	if(cvar.speed)
+	{
+		if(cvar.speed == 1.0)
+		{
+			speed = 100.0;
+		}
+		else if(cvar.speed == 2.0)
+		{
+			if(GetAsyncKeyState(VK_MBUTTON))
+			{
+				speed = 100.0;
+			}
+		}
+	}
+
+	if(speed != 1.0) {
+		AdjustSpeed(speed);
+	}
+	else {
+		if(*pGlobalSpeed != 1000.0) {
+			DefaultSpeed();
+		}
+	}
+
+	//me.spread.drawangles[0] = outrecoil[0] - outspread[0];
+	//me.spread.drawangles[1] = outrecoil[1] - outspread[1];
 
 	if(cvar.novisrecoil)
 	{
@@ -695,6 +820,12 @@ void CL_CreateMove ( float frametime, struct usercmd_s *cmd, int active )
 	{
 		me.spread.visangles[0] = outspread[0] - outrecoil[0];
 		me.spread.visangles[1] = outspread[1] - outrecoil[1];
+	}
+
+	if((cvar.aim == 2.0f) && (gAimbot.target != BAD_TARGET))
+	{
+		me.spread.visangles[0] += (aimangles[0] - g_OriginalCmd.viewangles[0]);
+		me.spread.visangles[1] += (aimangles[1] - g_OriginalCmd.viewangles[1]);
 	}
 
 	VectorAdd(cmd->viewangles, outspread, cmd->viewangles);
@@ -767,6 +898,13 @@ void V_CalcRefdef( struct ref_params_s *pparams )
 			VectorCopy(pparams->vieworg,me.pmEyePos);
 			gAimbot.target = BAD_TARGET;
 		}
+
+		if(cvar.aim && me.alive)
+		{
+			gAimbot.FindTarget();
+			dvar.aimtarget = gAimbot.target;
+		}
+		vPlayers.ClearTargetSpots();
 
 	}
 	gClientDll.V_CalcRefdef(pparams);
@@ -969,6 +1107,12 @@ int HUD_Key_Event( int down, int keynum, const char *pszCurrentBinding )
 	if( (keynum == K_HOME) && down )
 	{
 		gDebug.bShow = !gDebug.bShow;
+		return 0;
+	}
+	
+	if((keynum == K_DEL) && down) {
+		togglePanic();
+		return 0;
 	}
 
 	if(CMenuControl::HUD_Key_Event(down, keynum, pszCurrentBinding)) {

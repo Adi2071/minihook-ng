@@ -8,6 +8,8 @@
 UINT		g_nClearMask;
 UINT		g_nViewport = 0;
 
+int team = -1;
+
 // ============================= //
 // glBegin						 //
 // ============================= //
@@ -45,6 +47,20 @@ void WINAPI xglViewport( GLint x, GLint y, GLsizei	width, GLsizei height ) {
 // glVertex3f					 //
 // ============================= //
 void WINAPI xglVertex3f (GLfloat x,  GLfloat y,  GLfloat z) {
+
+	/*if(cvar.lambert)
+	{
+		if(team == -1){}
+		else if(team == TEAM_TERROR)
+		{
+			glColor3f(255, 0, 0);
+		}
+		else if(team == TEAM_CT)
+		{
+			glColor3f(0, 0, 255);
+		}
+	}*/
+
 	glVertex3f(x, y, z);
 } 
 
