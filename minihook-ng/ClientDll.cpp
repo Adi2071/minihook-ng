@@ -18,8 +18,8 @@
 #include "perfectwall.h"
 #include "BoneAimbot.h"
 
-#include "HookPanel.h"
-extern HookPanel* p_hkRootPanel;
+//#include "HookPanel.h"
+//extern HookPanel* p_hkRootPanel;
 
 using namespace std;
 

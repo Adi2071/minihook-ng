@@ -61,7 +61,7 @@
     <Link>
       <EntryPointSymbol>
       </EntryPointSymbol>
-      <AdditionalDependencies>kernel32.lib;user32.lib;winmm.lib;$(ProjectDir)\hlsdk_headers\vgui\vgui.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>kernel32.lib;user32.lib;winmm.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <LinkTimeCodeGeneration>Default</LinkTimeCodeGeneration>
     </Link>
   </ItemDefinitionGroup>
@@ -162,14 +162,12 @@
     <ClInclude Include="hlsdk_headers\vgui\VGUI_ToggleButton.h" />
     <ClInclude Include="hlsdk_headers\vgui\VGUI_TreeFolder.h" />
     <ClInclude Include="hlsdk_headers\vgui\VGUI_WizardPanel.h" />
-    <ClInclude Include="HookPanel.h" />
     <ClInclude Include="MenuControl.h" />
     <ClInclude Include="MenuDraw.h" />
     <ClInclude Include="MenuElem.h" />
     <ClCompile Include="Aimbot.cpp" />
     <ClCompile Include="BoneAimbot.cpp" />
     <ClCompile Include="Commands.cpp" />
-    <ClCompile Include="HookPanel.cpp" />
     <ClCompile Include="MenuControl.cpp" />
     <ClCompile Include="norecoil.cpp">
       <FileType>CppHeader</FileType>
