@@ -840,7 +840,6 @@
     <ClInclude Include="hlsdk_headers\vgui\VGUI_WizardPanel.h">
       <Filter>HLSDK Headers</Filter>
     </ClInclude>
-    <ClInclude Include="HookPanel.h" />
     <ClInclude Include="BoneAimbot.h">
       <Filter>Aimbot</Filter>
     </ClInclude>
@@ -937,6 +936,5 @@
     <ClCompile Include="BoneAimbot.cpp">
       <Filter>Aimbot</Filter>
     </ClCompile>
-    <ClCompile Include="HookPanel.cpp" />
   </ItemGroup>
 </Project>

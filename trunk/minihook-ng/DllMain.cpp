@@ -10,7 +10,7 @@
 #include "TransInclude.h"
 #include "util.h"
 #include "opengl.h"
-#include "HookPanel.h"
+//#include "HookPanel.h"
 
 // engine structure copies for global usage
 StudioModelRenderer_t	gStudioModelRenderer;
@@ -19,7 +19,7 @@ cl_enginefunc_t			gEngfuncs;
 engine_studio_api_t		gStudio;
 double*					pGlobalSpeed;
 float*					pFOV;
-HookPanel*				p_hkRootPanel;
+//HookPanel*				p_hkRootPanel;
 
 // engine structure pointers for hooking
 StudioModelRenderer_t*	pStudioModelRenderer;
@@ -27,7 +27,7 @@ ClientDll_t*			pClientDll;
 cl_enginefunc_t*		pEngfuncs;
 engine_studio_api_t*	pStudio;
 PVOID					pPreS_DynamicSound;
-vgui::Panel**			ppRootPanel;
+//vgui::Panel**			ppRootPanel;
 
 // detours
 Detour_c				*p_detFireBullets;
@@ -457,9 +457,9 @@ void SetupHooks(void)
 	pGlobalSpeed = (double*)gOffsets.GlobalSpeed();
 	pFOV = (float*)gOffsets.FOV();
 	pEV_HLDM_FireBullets = (pfnFireBullets)gOffsets.FireBullets();
-	ppRootPanel = (vgui::Panel**)gOffsets.RootPanel();
+	//ppRootPanel = (vgui::Panel**)gOffsets.RootPanel();
 
-	if(!pStudioModelRenderer || !pClientDll || !pEngfuncs || !pStudio || !pGlobalSpeed || !pFOV || !pEV_HLDM_FireBullets || !ppRootPanel)// || !pPreS_DynamicSound)
+	if(!pStudioModelRenderer || !pClientDll || !pEngfuncs || !pStudio || !pGlobalSpeed || !pFOV || !pEV_HLDM_FireBullets /*|| !ppRootPanel*/)// || !pPreS_DynamicSound)
 		return;
 
 	add_log("pStudioModelRenderer: 0x%X", pStudioModelRenderer);
@@ -514,8 +514,8 @@ void SetupHooks(void)
 	Initialize(pEngfuncs, CLDLL_INTERFACE_VERSION);
 	gClientDll.HUD_Init();
 
-	while(!*ppRootPanel) Sleep(100);
-	p_hkRootPanel = new HookPanel(ppRootPanel);
+	//while(!*ppRootPanel) Sleep(100);
+	//p_hkRootPanel = new HookPanel(ppRootPanel);
 
 	pEngfuncs->pfnHookEvent = gEngfuncs.pfnHookEvent;
 	pEngfuncs->pfnHookUserMsg = gEngfuncs.pfnHookUserMsg;
@@ -523,8 +523,6 @@ void SetupHooks(void)
 	pEngfuncs->pfnRegisterVariable = gEngfuncs.pfnRegisterVariable;
 
 	pEngfuncs = &gEngfuncs;
-
-	
 }
 
 Detour_c *detGetProcAddress = NULL;
